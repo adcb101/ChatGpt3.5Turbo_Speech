@@ -19,7 +19,7 @@
 <img  src="doc/blank.png"/>
 </div>
 
-ChatGpt3.5Turbo_Speech
+
 <br />
 
 ## ✨ 设计思想
