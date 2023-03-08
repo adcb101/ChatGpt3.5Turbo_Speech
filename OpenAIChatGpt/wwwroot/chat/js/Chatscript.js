@@ -1,9 +1,12 @@
-const synth = window.speechSynthesis;
 
+
+var synth = window.speechSynthesis;
+var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition
+var CN_SPEECHREC = new SpeechRecognition  
 const inputForm = document.querySelector("form");
 const inputTxt = document.querySelector(".txt");
-const voiceSelect = document.querySelector("select");
-
+const languageSelect=document.getElementById("Languages");
+const chatcontainer = document.getElementById("chat-container");
 const pitch = document.querySelector("#pitch");
 const pitchValue = document.querySelector(".pitch-value");
 const rate = document.querySelector("#rate");
@@ -41,7 +44,18 @@ const key = Math.random().toString();
 })();
 
 
+function scrollToBottom(editor) {
+    editor.scrollTop = editor.scrollHeight - editor.clientHeight;
+}
+
+function observeEditor(editor) {
+    var observer = new MutationObserver(function (mutations) { scrollToBottom(editor); });
+    observer.observe(editor, { childList: true, subtree: true });
+}
+observeEditor(chatcontainer); 
+
 sendButton.addEventListener('click', sendMessage);
+
 messageInput.addEventListener('keydown', function (event) {
     if (event.key === 'Enter') {
         sendMessage();
@@ -67,42 +81,18 @@ function sendMessage() {
         var role = "user";
         addChatMessage("User: " + message);
 
-        $.post("home/chat", { role: role, content: message ,key : key}, function (response) {
-            //var reuslt=  JSON.stringify(response);
+        $.post("home/chat", { role: role, content: message, key: key }, function (response) {
             addChatMessage("Assistant: " + response.content);
-            //var newSentences = CN_SplitIntoSentences(response.content);
-            CN_SayOutLoud(response.content.trim());
+             CN_SayOutLoud(response.content.trim());
 
-            //if (newSentences != null && newSentences.length != CN_CURRENT_MESSAGE_SENTENCES.length) {
-            //    // There is a new part of a sentence!
-            //    var nextRead = CN_CURRENT_MESSAGE_SENTENCES_NEXT_READ;
-            //    for (i = nextRead; i < newSentences.length; i++) {
-            //        CN_CURRENT_MESSAGE_SENTENCES_NEXT_READ = i + 1;
-
-            //        var lastPart = newSentences[i];
-            //        CN_SayOutLoud(lastPart);
-            //    }
-            //    CN_CURRENT_MESSAGE_SENTENCES = newSentences;
-            //}
             //speak(response.content);
             // 处理响应数据
             //alert("Success");
+        }).error(function (jqxhr, status, error) {
+            alert("出现异常，请重新输入或说话：" + status);
+            CN_StartSpeechRecognitionDealy();
         });
-        //$.ajax({
-        // type: "POST",
-        // url: "home/chat",
-        // ContentType: "application/json",
-        // data: data,
-        // success: function (result) {
-        //  alert("Success");
-        // },
-        // error: function (result) {
-        //  alert("Error");
-        // }
-        //});
-
-        //
-
+        
         messageInput.value = '';
     }
 }
@@ -120,19 +110,11 @@ playButtons.forEach(playButton => {
         else {
             messageTextnew.push(messageText[1].trim())
         }
-        //var newSentences = CN_SplitIntoSentences(messageTextnew[0]);
-        //if (newSentences != null && newSentences.length != CN_CURRENT_MESSAGE_SENTENCES.length) {
-        // // There is a new part of a sentence!
-        // var nextRead = CN_CURRENT_MESSAGE_SENTENCES_NEXT_READ;
-        // for (i = nextRead; i < newSentences.length; i++) {
-        //  CN_CURRENT_MESSAGE_SENTENCES_NEXT_READ = i + 1;
-
-        //  var lastPart = newSentences[i];
-        //  CN_SayOutLoud(lastPart);
-        // }
-        // CN_CURRENT_MESSAGE_SENTENCES = newSentences;
-        //}
+        
+        CN_SPEECHREC.stop();
         speak(messageTextnew[0]);
+        setTimeout(CN_SPEECHREC.start(), 2000)
+
 
         console.log(messageTextnew[0]);
     });
@@ -180,23 +162,11 @@ function addChatMessage(content) {
         }
         else {
             messageTextnew.push(messageText[1].trim())
-
-            //messageTextnew = messageText[1].trim()
         }
-        //var newSentences = CN_SplitIntoSentences(messageTextnew[0]);
-        //if (newSentences != null && newSentences.length != CN_CURRENT_MESSAGE_SENTENCES.length) {
-        // // There is a new part of a sentence!
-        // var nextRead = CN_CURRENT_MESSAGE_SENTENCES_NEXT_READ;
-        // for (i = nextRead; i < newSentences.length; i++) {
-        //  CN_CURRENT_MESSAGE_SENTENCES_NEXT_READ = i + 1;
-
-        //  var lastPart = newSentences[i];
-        //  CN_SayOutLoud(lastPart);
-        // }
-        // CN_CURRENT_MESSAGE_SENTENCES = newSentences;
-        //}
-
+        
+        CN_SPEECHREC.stop();
         speak(messageTextnew[0]);
+        setTimeout(CN_SPEECHREC.start(), 2000)
         console.log(messageTextnew[0]);
     });
 
@@ -207,11 +177,14 @@ function addChatMessage(content) {
 let voices = [];
 
 
+let parentOptions = [];
+let childOptions = [];
+
 
 function populateVoiceList() {
     voices = synth.getVoices().sort(function (a, b) {
-        const aname = a.name.toUpperCase();
-        const bname = b.name.toUpperCase();
+        const aname = a.name.split("-")[1].toUpperCase();
+        const bname = b.name.split("-")[1].toUpperCase();
 
         if (aname < bname) {
             return -1;
@@ -221,66 +194,151 @@ function populateVoiceList() {
             return +1;
         }
     });
-    const selectedIndex =
-        voiceSelect.selectedIndex < 0 ? 0 : voiceSelect.selectedIndex;
-    voiceSelect.innerHTML = "";
+    const selectedIndex = 
+        languageSelect.selectedIndex < 0 ? 32 : languageSelect.selectedIndex;
+    languageSelect.innerHTML = "";
 
-    for (let i = 0; i < voices.length; i++) {
+    var childOption = [];
+    for (let i = 1; i <= voices.length; i++) {
         // 
         //if (voices[i].lang == 'en-AU' || voices[i].lang == 'zh-CN' || voices[i].lang == 'en-US') {
-            const option = document.createElement("option");
-            //(${voices[i].lang})
-            const name = [];
-            const arr = voices[i].name.split("-");
-            name.push(arr[1])
-            name.push(arr[0])
-        if (name[0]==undefined) {
-            option.textContent = `${name[1]} `;
-        } else
-        {
-            option.textContent = `${name[0]} - ${name[1]} `;
+        const option = document.createElement("option");
+        //(${voices[i].lang})
+        //const name = [];
+        
+        var arr = voices[i-1].name.split("-");
+        if (arr[1] == undefined) {
+            //option.textContent = `${name[1]} `;
+            console.log(arr[0])
 
-        }
+        } else {
 
-            if (voices[i].default) {
-                option.textContent += " -- DEFAULT";
+            if (i == 1) {
+
+                parentOptions.push(arr[1].trim());
+                option.textContent = parentOptions[parentOptions.length - 1]
+                if (voices[i - 1].default) {
+                    option.textContent += " -- DEFAULT";
+                }
+                option.setAttribute("Value", parentOptions.length - 1);
+
+                //option.setAttribute("data-lang", voices[i].lang);
+                option.setAttribute("data-name", parentOptions[parentOptions.length - 1]);
+                languageSelect.appendChild(option);
+                childOption.push(arr[0]);
             }
+            else {
+                //.textContent = `${name[0]} - ${name[1]} `;
+                if (parentOptions[parentOptions.length-1] != arr[1].trim()) {
+                    parentOptions.push(arr[1].trim());
 
-            option.setAttribute("data-lang", voices[i].lang);
-            option.setAttribute("data-name", voices[i].name);
-            voiceSelect.appendChild(option);
-        //}
+                    option.textContent = parentOptions[parentOptions.length - 1]
+                    if (voices[i - 1].default) {
+                        option.textContent += " -- DEFAULT";
+                    }
+                    option.setAttribute("Value", parentOptions.length - 1);
 
+                    //option.setAttribute("data-lang", voices[i].lang);
+                    option.setAttribute("data-name", parentOptions[parentOptions.length - 1]);
+                    languageSelect.appendChild(option);
+                    childOptions.push(childOption);
+                    childOption = [];
+                    childOption.push(arr[0]);
+                   
+                        
+
+
+                }
+                else {
+                    childOption.push(arr[0]);
+                    if (i == voices.length) {
+
+
+                        childOptions.push(childOption);
+                        childOption = [];
+                    }
+                }
+
+            } 
+
+            
+            
+        }
+       
     }
-    voiceSelect.selectedIndex = selectedIndex;
+
+
+   console.log(parentOptions);
+    languageSelect.selectedIndex = selectedIndex;
+
 }
 
 populateVoiceList();
-window.onload = function () { sortOptions(); };
-function sortOptions() {
+
+var child = document.getElementById("Voices");
+// 声明子选项列表（数组）
+
+ //为父级下拉菜单添加事件监听 
+languageSelect.addEventListener("click", function () { // 重置子下拉菜单的选项
+     child.length = 1;
+    //child.options.length = 0; 
+    // 如果选择了默认选项，则返回 
+    if (languageSelect.value == "0") return;
+    // 根据所选的选项值加载子下拉菜单 
+    var m = parseInt(languageSelect.value);
+    var options = childOptions[m];  
+    var text = $('#Languages option:selected').text()
+    addChildOptions(options, text );
+});
+
+
+
+function addChildOptions(options,parenttext) {
+    // 为子下拉菜单添加新选项 
+    for (var i = 0; i < options.length; i++) {
+        var option = document.createElement("option");
+
+        option.setAttribute("data-name", options[i] +"- "+ parenttext);
+        option.text = options[i];
+        child.add(option);
+    }
+}
+
+
+window.onload = function () {
+
+    sortOptions(languageSelect.options);
+    sortOptions(child.options);
+    
+};
+function sortOptions(options) {
     //var select = document.getElementById("mySelect"); // replace "mySelect" with the ID of your select element 
-    var options = voiceSelect.options;
+    var options = options;
     var sorted = [];
-    for (var i = 0; i < options.length; i++)
-    { sorted.push(options[i]); }
+    for (var i = 0; i < options.length; i++) { sorted.push(options[i]); }
     sorted.sort(function (a, b) {
         var textA = a.text.toUpperCase();
         var textB = b.text.toUpperCase();
         return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
     });
-    for (var i = 0; i < sorted.length; i++)
-    {
-        voiceSelect.appendChild(sorted[i]);
+    for (var i = 0; i < sorted.length; i++) {
+        languageSelect.appendChild(sorted[i]);
     }
 }
 
-if (speechSynthesis.onvoiceschanged !== undefined) {
-    speechSynthesis.onvoiceschanged = populateVoiceList;
+
+
+
+if (synth.onvoiceschanged !== undefined) {
+    synth.onvoiceschanged = populateVoiceList;
 }
 
 function speak(valueinput) {
+
+    const isspeaking = synth.speaking;
     if (synth.speaking) {
-        console.error("speechSynthesis.speaking");
+
+        console.log("speechSynthesis.speaking");
         return;
     }
 
@@ -292,13 +350,13 @@ function speak(valueinput) {
         };
 
         utterThis.onerror = function (event) {
-            console.error("SpeechSynthesisUtterance.onerror");
+            console.log("SpeechSynthesisUtterance.onerror");
         };
 
 
 
         const selectedOption =
-            voiceSelect.selectedOptions[0].getAttribute("data-name");
+            child.selectedOptions[0].getAttribute("data-name");
 
         for (let i = 0; i < voices.length; i++) {
             if (voices[i].name === selectedOption) {
@@ -322,7 +380,7 @@ rate.onchange = function () {
     rateValue.textContent = rate.value;
 };
 
-voiceSelect.onchange = function () {
+child.onchange = function () {
     //speak(inputTxt.value);
 };
 
@@ -336,7 +394,7 @@ var CN_TEXT_TO_SPEECH_PITCH = 1; // This will alter the pitch for the bot's voic
 
 // Indicate a locale code such as 'fr-FR', 'en-US', to use a particular language for the speech recognition functionality (when you speak into the mic)
 // If you leave this blank, the system's default language will be used
-var CN_WANTED_LANGUAGE_SPEECH_REC = ""; //"fr-FR";
+var CN_WANTED_LANGUAGE_SPEECH_REC = "zh-CN"; //"fr-FR";
 
 // Determine which word will cause this scrip to stop.
 var CN_SAY_THIS_WORD_TO_STOP = "stop";
@@ -357,7 +415,7 @@ var CN_MESSAGE_COUNT = 0;
 var CN_CURRENT_MESSAGE = null;
 var CN_CURRENT_MESSAGE_SENTENCES = [];
 var CN_CURRENT_MESSAGE_SENTENCES_NEXT_READ = 0;
-var CN_SPEECHREC = null;
+//var CN_SPEECHREC = null;
 var CN_IS_READING = false;
 var CN_IS_LISTENING = false;
 var CN_FINISHED = false;
@@ -390,18 +448,9 @@ function CN_SayOutLoud(text) {
     var msg = new SpeechSynthesisUtterance();
     msg.text = text;
 
-    //const selectedOption =
-    //	voiceSelect.selectedOptions[0].getAttribute("data-name");
-
-    //for (let i = 0; i < voices.length; i++) {
-    //	if (voices[i].name === selectedOption) {
-    //		msg.voice = voices[i];
-    //		break;
-    //	}
-    //}
-
+    
     const selectedOption =
-        voiceSelect.selectedOptions[0].getAttribute("data-name");
+        child.selectedOptions[0].getAttribute("data-name");
 
     for (let i = 0; i < voices.length; i++) {
         if (voices[i].name === selectedOption) {
@@ -430,7 +479,8 @@ function CN_SayOutLoud(text) {
         CN_AfterSpeakOutLoudFinished();
     }
     CN_IS_READING = true;
-    window.speechSynthesis.speak(msg);
+    const isspeaking = synth.speaking;
+    synth.speak(msg);
 }
 
 // Occurs when speaking out loud is finished
@@ -447,7 +497,7 @@ function CN_AfterSpeakOutLoudFinished() {
     // restart listening
     CN_IS_READING = false;
     setTimeout(function () {
-        if (!window.speechSynthesis.speaking) {
+        if (!synth.speaking) {
             if (CN_SPEECH_REC_SUPPORTED && CN_SPEECHREC && !CN_IS_LISTENING && !CN_PAUSED && !CN_SPEECHREC_DISABLED) CN_SPEECHREC.start();
             clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
             CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 100);
@@ -456,8 +506,8 @@ function CN_AfterSpeakOutLoudFinished() {
 }
 function CN_KeepSpeechSynthesisActive() {
     console.log("Keeping speech synthesis active...");
-    window.speechSynthesis.pause();
-    window.speechSynthesis.resume();
+    synth.pause();
+    synth.resume();
     CN_TIMEOUT_KEEP_SYNTHESIS_WORKING = setTimeout(CN_KeepSpeechSynthesisActive, 5000);
 }
 
@@ -478,7 +528,7 @@ function CN_SplitIntoSentences(text) {
             // Latin punctuation
             //currentChar == ',' 
             //currentChar == ':'
-             currentChar == '.'
+            currentChar == '.'
             //|| currentChar == '!'
             || currentChar == '?'
             || currentChar == ';'
@@ -558,23 +608,12 @@ function CN_SendMessage(text) {
             //var reuslt=  JSON.stringify(response);
             addChatMessage("Assistant: " + response.content);
             CN_SayOutLoud(response.content.trim());
-            //var newSentences = CN_SplitIntoSentences(response.content);
-            //if (newSentences != null && newSentences.length != CN_CURRENT_MESSAGE_SENTENCES.length) {
-            //    // There is a new part of a sentence!
-            //    var nextRead = CN_CURRENT_MESSAGE_SENTENCES_NEXT_READ;
-            //    for (i = nextRead; i < newSentences.length; i++) {
-            //        CN_CURRENT_MESSAGE_SENTENCES_NEXT_READ = i + 1;
+     
+        }).error(function (jqxhr, status, error) {
+            alert("出现异常，请重新输入或说话：" + status);
+            CN_StartSpeechRecognitionDealy()
 
-            //        var lastPart = newSentences[i];
-            //        CN_SayOutLoud(lastPart);
-            //    }
-            //    CN_CURRENT_MESSAGE_SENTENCES = newSentences;
-            //}
-
-            //speak(response.content);
-            // 处理响应数据
-            //alert("Success");
-        });
+        });;
         messageInput.value = "";
         // Stop speech recognition until the answer is received
         if (CN_SPEECHREC) {
@@ -589,96 +628,106 @@ function CN_SendMessage(text) {
 }
 
 // Start speech recognition using the browser's speech recognition API
+
 function CN_StartSpeechRecognition() {
-    if (CN_IS_READING) {
-        clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
-        CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 100);
-        return;
-    }
-    if (!CN_SPEECH_REC_SUPPORTED) return;
-    CN_SPEECHREC = ('webkitSpeechRecognition' in window) ? new webkitSpeechRecognition() : new SpeechRecognition();
-    CN_SPEECHREC.continuous = true;
-    CN_SPEECHREC.lang = CN_WANTED_LANGUAGE_SPEECH_REC;
-    CN_SPEECHREC.onstart = () => {
-        // Make border red
-        $("#TTGPTSettings").css("border-bottom", "8px solid red");
 
-        CN_IS_LISTENING = true;
-        console.log("I'm listening");
-    };
-    CN_SPEECHREC.onend = () => {
-        // Make border grey again
-        $("#TTGPTSettings").css("border", "2px solid #888");
-
-        CN_IS_LISTENING = false;
-        console.log("I've stopped listening");
-    };
-    CN_SPEECHREC.onerror = () => {
-        CN_IS_LISTENING = false;
-        console.log("Error while listening");
-    };
-    CN_SPEECHREC.onresult = (event) => {
-        var final_transcript = "";
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
-            if (event.results[i].isFinal)
-                final_transcript += event.results[i][0].transcript;
+    setTimeout(CN_StartSpeechRecognitionDealy, 3000);
+}
+function CN_StartSpeechRecognitionDealy() {
+    if (!synth.speaking) {
+        if (CN_IS_READING) {
+            clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
+            CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 3000);
+            return;
         }
-        console.log("You have said the following words: " + final_transcript);
-        if (final_transcript.toLowerCase() == CN_SAY_THIS_WORD_TO_STOP) {
-            console.log("You said '" + CN_SAY_THIS_WORD_TO_STOP + "'. Conversation ended");
-            CN_FINISHED = true;
-            CN_PAUSED = false;
-            CN_SPEECHREC.stop();
-            CN_SayOutLoud("Bye bye");
-            alert("Conversation ended. Click the Start button to resume");
+        if (!CN_SPEECH_REC_SUPPORTED) return;
+        CN_SPEECHREC = ('webkitSpeechRecognition' in window) ? new webkitSpeechRecognition() : new SpeechRecognition();
+        CN_SPEECHREC.continuous = true;
+        CN_SPEECHREC.lang = CN_WANTED_LANGUAGE_SPEECH_REC;
+        CN_SPEECHREC.onstart = () => {
+            // Make border red
+            $("#TTGPTSettings").css("border-bottom", "8px solid red");
 
-            // Show start button, hide action buttons
-            jQuery(".CNStartZone").show();
-            jQuery(".CNActionButtons").hide();
+            CN_IS_LISTENING = true;
+            console.log("I'm listening");
+        };
+        CN_SPEECHREC.onend = () => {
+            // Make border grey again
+            $("#TTGPTSettings").css("border", "2px solid #888");
 
-            return;
-        } else if (final_transcript.toLowerCase() == CN_SAY_THIS_WORD_TO_PAUSE) {
-            console.log("You said '" + CN_SAY_THIS_WORD_TO_PAUSE + "' Conversation paused");
-            CN_PAUSED = true;
-            if (CN_SPEECHREC) CN_SPEECHREC.stop();
-            alert("Conversation paused, the browser is no longer listening. Click OK to resume");
-            CN_PAUSED = false;
-            console.log("Conversation resumed");
-            return;
-        } else if (final_transcript.toLowerCase().trim() == CN_SAY_THIS_TO_SEND.toLowerCase().trim() && !CN_AUTO_SEND_AFTER_SPEAKING) {
-            console.log("You said '" + CN_SAY_THIS_TO_SEND + "' - the message will be sent");
-
-            // Click button
-            jQuery("textarea").closest("div").find("button").click();
-
-            // Stop speech recognition until the answer is received
-            if (CN_SPEECHREC) {
-                clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
+            CN_IS_LISTENING = false;
+            console.log("I've stopped listening");
+        };
+        CN_SPEECHREC.onerror = () => {
+            CN_IS_LISTENING = false;
+            console.log("Error while listening");
+        };
+        CN_SPEECHREC.onresult = (event) => {
+            var final_transcript = "";
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal)
+                    final_transcript += event.results[i][0].transcript;
+            }
+            console.log("You have said the following words: " + final_transcript);
+            if (final_transcript.toLowerCase() == CN_SAY_THIS_WORD_TO_STOP) {
+                console.log("You said '" + CN_SAY_THIS_WORD_TO_STOP + "'. Conversation ended");
+                CN_FINISHED = true;
+                CN_PAUSED = false;
                 CN_SPEECHREC.stop();
+                CN_SayOutLoud("Bye bye");
+                alert("Conversation ended. Click the Start button to resume");
+
+                // Show start button, hide action buttons
+                jQuery(".CNStartZone").show();
+                jQuery(".CNActionButtons").hide();
+
+                return;
+            } else if (final_transcript.toLowerCase() == CN_SAY_THIS_WORD_TO_PAUSE) {
+                console.log("You said '" + CN_SAY_THIS_WORD_TO_PAUSE + "' Conversation paused");
+                CN_PAUSED = true;
+                if (CN_SPEECHREC) CN_SPEECHREC.stop();
+                alert("Conversation paused, the browser is no longer listening. Click OK to resume");
+                CN_PAUSED = false;
+                console.log("Conversation resumed");
+                return;
+            } else if (final_transcript.toLowerCase().trim() == CN_SAY_THIS_TO_SEND.toLowerCase().trim() && !CN_AUTO_SEND_AFTER_SPEAKING) {
+                console.log("You said '" + CN_SAY_THIS_TO_SEND + "' - the message will be sent");
+
+                // Click button
+                jQuery("textarea").closest("div").find("button").click();
+
+                // Stop speech recognition until the answer is received
+                if (CN_SPEECHREC) {
+                    clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
+                    CN_SPEECHREC.stop();
+                }
+
+                return;
             }
 
-            return;
-        }
-
-        CN_SendMessage(final_transcript);
-    };
-    if (!CN_IS_LISTENING && CN_SPEECH_REC_SUPPORTED && !CN_SPEECHREC_DISABLED) CN_SPEECHREC.start();
-    clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
-    CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 100);
+            CN_SendMessage(final_transcript);
+        };
+        if (!CN_IS_LISTENING && CN_SPEECH_REC_SUPPORTED && !CN_SPEECHREC_DISABLED) CN_SPEECHREC.start();
+        clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
+        CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 100);
+    }
 }
+
+
+
 
 // Make sure the speech recognition is turned on when the bot is not speaking
 function CN_KeepSpeechRecWorking() {
     if (CN_FINISHED) return; // Conversation finished
     clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
-    CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 100);
+    CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 2000);
     if (!CN_IS_READING && !CN_IS_LISTENING && !CN_PAUSED) {
         if (!CN_SPEECHREC)
             CN_StartSpeechRecognition();
         else {
             if (!CN_IS_LISTENING) {
                 try {
-                    if (CN_SPEECH_REC_SUPPORTED && !window.speechSynthesis.speaking && !CN_SPEECHREC_DISABLED)
+                    if (CN_SPEECH_REC_SUPPORTED && !synth.speaking && !CN_SPEECHREC_DISABLED)
                         CN_SPEECHREC.start();
                 } catch (e) { }
             }
@@ -728,8 +777,8 @@ function CN_ToggleButtonClick() {
             CN_SPEAKING_DISABLED = true;
 
             // Stop current message (equivalent to 'skip')
-            window.speechSynthesis.pause(); // Pause, and then...
-            window.speechSynthesis.cancel(); // Cancel everything
+            synth.pause(); // Pause, and then...
+            synth.cancel(); // Cancel everything
             CN_CURRENT_MESSAGE = null; // Remove current message
             return;
 
@@ -744,8 +793,8 @@ function CN_ToggleButtonClick() {
 
         // Skip current message being read
         case "skip":
-            window.speechSynthesis.pause(); // Pause, and then...
-            window.speechSynthesis.cancel(); // Cancel everything
+            synth.pause(); // Pause, and then...
+            synth.cancel(); // Cancel everything
             CN_CURRENT_MESSAGE = null; // Remove current message
 
             // Restart listening maybe?
@@ -789,11 +838,11 @@ function CN_InitScript() {
     CN_RestoreSettings();
 
     // Wait on voices to be loaded before fetching list
-    window.speechSynthesis.onvoiceschanged = function () {
+    synth.onvoiceschanged = function () {
         if (!CN_WANTED_VOICE_NAME) {
             console.log("Reading with default browser voice");
         } else {
-            speechSynthesis.getVoices().forEach(function (voice) {
+            synth.getVoices().forEach(function (voice) {
                 //console.log("Found possible voice: " + voice.name + " (" + voice.lang + ")");
                 if (voice.lang + "-" + voice.name == CN_WANTED_VOICE_NAME) {
                     CN_WANTED_VOICE = voice;
@@ -829,7 +878,7 @@ function CN_InitScript() {
 
     setTimeout(function () {
         // Try and get voices
-        speechSynthesis.getVoices();
+        synth.getVoices();
 
         // Make icons clickable
         jQuery(".CNToggle").css("cursor", "pointer");
@@ -856,7 +905,7 @@ function CN_OnSettingsIconClick() {
     // 1. Bot's voice
     var voices = "";
     var n = 0;
-    speechSynthesis.getVoices().forEach(function (voice) {
+    synth.getVoices().forEach(function (voice) {
         var label = `${voice.name} (${voice.lang})`;
         if (voice.default) label += ' — DEFAULT';
         var SEL = (CN_WANTED_VOICE && CN_WANTED_VOICE.lang == voice.lang && CN_WANTED_VOICE.name == voice.name) ? "selected=selected" : "";
@@ -926,7 +975,7 @@ function CN_SaveSettings() {
     try {
         // AI voice settings: voice/language, rate, pitch
         var wantedVoiceIndex = jQuery("#TTGPTVoice").val();
-        var allVoices = speechSynthesis.getVoices();
+        var allVoices = synth.getVoices();
         CN_WANTED_VOICE = allVoices[wantedVoiceIndex];
         CN_WANTED_VOICE_NAME = CN_WANTED_VOICE.lang + "-" + CN_WANTED_VOICE.name;
         CN_TEXT_TO_SPEECH_RATE = Number(jQuery("#TTGPTRate").val());

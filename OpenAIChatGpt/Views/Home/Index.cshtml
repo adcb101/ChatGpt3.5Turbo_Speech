@@ -9,8 +9,24 @@
     Enter some text in the input below and press Enter or the "Send" button
     to hear it. change voices using the dropdown menu.
 </p>
+<div class="select-wrapper">
+    <select id="Languages" style="cursor:pointer;">
+    </select>
+    <select id="Voices" style="cursor:pointer;">
+    </select>
+</div>
+<div style="margin-top:15px;">
+    <label for="rate">Rate</label><input style="cursor:pointer;" type="range" min="0.5" max="2" value="1" step="0.1" id="rate" />
+    <div class="rate-value" style="cursor:pointer;">1</div>
+    <div class="clearfix" style="cursor:pointer;"></div>
+</div>
 
-<div id="chat-container" style="margin-top:15px">
+<div style="margin-top:15px  ">
+    <label for="pitch">Pitch</label><input style="cursor:pointer;" type="range" min="0" max="2" value="1" step="0.13" id="pitch" />
+    <div class="pitch-value">1</div>
+    <div class="clearfix"></div>
+</div>
+<div id="chat-container" style="margin-top:15px;cursor:pointer ">
     <div id="chat-history">
         <div class="chat-message">
             <!-- <div class="chat-message-content">
@@ -23,23 +39,16 @@
     </div>
 
 </div>
-<div style="margin-top:15px">
-    <label for="rate">Rate</label><input type="range" min="0.5" max="2" value="1" step="0.1" id="rate" />
-    <div class="rate-value">1</div>
-    <div class="clearfix"></div>
-</div>
 
-<div style="margin-top:15px">
-    <label for="pitch">Pitch</label><input type="range" min="0" max="2" value="1" step="0.13" id="pitch" />
-    <div class="pitch-value">1</div>
-    <div class="clearfix"></div>
-</div>
+@*<div style="margin-top:15px ">
+    <select id="Languages" style="cursor:pointer;"></select>
+    <select id="Voices" style="cursor:pointer;"></select>
+</div>*@
 
-<select style="margin-top:15px"></select>
 
 <div id="chat-input" style="margin-top:15px">
     <input type="text" id="message-input" placeholder="Type your message here...">
-    <button id="send-button">Send</button>
+    <button id="send-button" style="cursor:pointer;">Send</button>
     @*<button id="voice-input-button">Speak</button>*@
 </div>
 
