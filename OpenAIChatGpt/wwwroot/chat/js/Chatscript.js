@@ -1,8 +1,8 @@
 
 
 var synth = window.speechSynthesis;
-var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition
-var CN_SPEECHREC = new SpeechRecognition  
+//var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition
+//var CN_SPEECHREC = new SpeechRecognition  
 const inputForm = document.querySelector("form");
 const inputTxt = document.querySelector(".txt");
 const languageSelect=document.getElementById("Languages");
@@ -420,7 +420,7 @@ var CN_MESSAGE_COUNT = 0;
 var CN_CURRENT_MESSAGE = null;
 var CN_CURRENT_MESSAGE_SENTENCES = [];
 var CN_CURRENT_MESSAGE_SENTENCES_NEXT_READ = 0;
-//var CN_SPEECHREC = null;
+var CN_SPEECHREC = null;
 var CN_IS_READING = false;
 var CN_IS_LISTENING = false;
 var CN_FINISHED = false;
@@ -438,7 +438,7 @@ function CN_SayOutLoud(text) {
     if (!text || CN_SPEAKING_DISABLED) {
         if (CN_SPEECH_REC_SUPPORTED && CN_SPEECHREC && !CN_IS_LISTENING && !CN_PAUSED && !CN_SPEECHREC_DISABLED) CN_SPEECHREC.start();
         clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
-        CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 100);
+        CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 1000);
         return;
     }
 
@@ -502,13 +502,14 @@ function CN_AfterSpeakOutLoudFinished() {
 
     // restart listening
     CN_IS_READING = false;
+    console.log("CN_AfterSpeakOutLoudFinished:" +CN_IS_READING);
     setTimeout(function () {
         if (!synth.speaking) {
             if (CN_SPEECH_REC_SUPPORTED && CN_SPEECHREC && !CN_IS_LISTENING && !CN_PAUSED && !CN_SPEECHREC_DISABLED) CN_SPEECHREC.start();
             clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
-            CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 100);
+            CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 1000);
         }
-    }, 500);
+    }, 1000);
 }
 function CN_KeepSpeechSynthesisActive() {
     console.log("Keeping speech synthesis active...");
@@ -639,14 +640,15 @@ function CN_SendMessage(text) {
 // Start speech recognition using the browser's speech recognition API
 
 function CN_StartSpeechRecognition (){
-    
+        console.log("CN_StartSpeechRecognition:" +CN_IS_READING);
+    if (!synth.speaking) {
         if (CN_IS_READING) {
             clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
-            CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 100);
+            CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 1000);
             return;
         }
         if (!CN_SPEECH_REC_SUPPORTED) return;
-        //CN_SPEECHREC = ('webkitSpeechRecognition' in window) ? new webkitSpeechRecognition() : new SpeechRecognition();
+        CN_SPEECHREC = ('webkitSpeechRecognition' in window) ? new webkitSpeechRecognition() : new SpeechRecognition();
         CN_SPEECHREC.continuous = true;
         CN_SPEECHREC.lang = CN_WANTED_LANGUAGE_SPEECH_REC;
         CN_SPEECHREC.onstart = () => {
@@ -714,7 +716,9 @@ function CN_StartSpeechRecognition (){
         };
         if (!CN_IS_LISTENING && CN_SPEECH_REC_SUPPORTED && !CN_SPEECHREC_DISABLED) CN_SPEECHREC.start();
         clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
-        CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 100);
+        CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 5000);
+    }
+        
     
 }
 
@@ -725,7 +729,7 @@ function CN_StartSpeechRecognition (){
 function CN_KeepSpeechRecWorking() {
     if (CN_FINISHED) return; // Conversation finished
     clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
-    CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 100);
+    CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 1000);
     if (!CN_IS_READING && !CN_IS_LISTENING && !CN_PAUSED) {
         if (!CN_SPEECHREC)
             CN_StartSpeechRecognition();
