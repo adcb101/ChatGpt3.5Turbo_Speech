@@ -195,7 +195,7 @@ function populateVoiceList() {
         }
     });
     const selectedIndex = 
-        languageSelect.selectedIndex < 0 ? 32 : languageSelect.selectedIndex;
+        languageSelect.selectedIndex < 0 ? 31 : languageSelect.selectedIndex;
     languageSelect.innerHTML = "";
 
     var childOption = [];
@@ -268,7 +268,7 @@ function populateVoiceList() {
     }
 
 
-   console.log(parentOptions);
+   //console.log(parentOptions);
     languageSelect.selectedIndex = selectedIndex;
 
 }
@@ -861,7 +861,7 @@ function CN_InitScript() {
     };
 
     // Add icons on the top right corner
-    jQuery("body").append("<span style='position: fixed; top: 8px; right: 16px; display: inline-block; " +
+    jQuery("body").append("<span style='position: fixed; top: 150px; right:650px; display: inline-block; " +
         "background: #888; color: white; padding: 8px; font-size: 16px; border-radius: 4px; text-align: center;" +
         "font-weight: bold; z-index: 1111;' id='TTGPTSettings'><a href='https://github.com/C-Nedelcu/talk-to-chatgpt' target=_blank title='Visit project website'>Talk-to-ChatGPT v1.6.1</a><br />" +
         "<span style='font-size: 16px;' class='CNStartZone'>" +
