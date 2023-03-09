@@ -1,5 +1,7 @@
 using OpenAI.GPT3.Extensions;
 using OpenAIChatGpt.Services;
+using Serilog;
+using Serilog.Sinks.Async;
 
 namespace OpenAIChatGpt
 {
@@ -16,7 +18,13 @@ namespace OpenAIChatGpt
                 //options.DeploymentId = "MyDeploymentId";
                 //options.ResourceName = "MyResourceName";
             });
-
+            // ¨Ï¥Î¤é§Ó
+            builder.Host.UseSerilog((context, logger) =>
+            {
+                logger.ReadFrom.Configuration(context.Configuration);
+                logger.Enrich.FromLogContext();
+                logger.WriteTo.File("logs\\myapp.txt", rollingInterval: RollingInterval.Day);
+            });
             builder.Services.AddScoped<IChatGptSevice, ChatGptSevice>();
             builder.Services.AddMemoryCache();
 

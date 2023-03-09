@@ -83,14 +83,14 @@ function sendMessage() {
 
         $.post("home/chat", { role: role, content: message, key: key }, function (response) {
             addChatMessage("Assistant: " + response.content);
-             CN_SayOutLoud(response.content.trim());
+             //CN_SayOutLoud(response.content.trim());
 
-            //speak(response.content);
+            speak(response.content);
             // 处理响应数据
             //alert("Success");
         }).error(function (jqxhr, status, error) {
             alert("出现异常，请重新输入或说话：" + status);
-            CN_StartSpeechRecognitionDealy();
+            //CN_StartSpeechRecognitionDealy();
         });
         
         messageInput.value = '';
@@ -111,9 +111,9 @@ playButtons.forEach(playButton => {
             messageTextnew.push(messageText[1].trim())
         }
         
-        CN_SPEECHREC.stop();
+        //CN_SPEECHREC.stop();
         speak(messageTextnew[0]);
-        setTimeout(CN_SPEECHREC.start(), 2000)
+        //setTimeout(CN_SPEECHREC.start(), 2000)
 
 
         console.log(messageTextnew[0]);
@@ -164,9 +164,9 @@ function addChatMessage(content) {
             messageTextnew.push(messageText[1].trim())
         }
         
-        CN_SPEECHREC.stop();
+       // CN_SPEECHREC.stop();
         speak(messageTextnew[0]);
-        setTimeout(CN_SPEECHREC.start(), 2000)
+        //setTimeout(CN_SPEECHREC.start(), 2000)
         console.log(messageTextnew[0]);
     });
 
@@ -291,8 +291,6 @@ languageSelect.addEventListener("click", function () { // 重置子下拉菜单�
     addChildOptions(options, text );
 });
 
-
-
 function addChildOptions(options,parenttext) {
     // 为子下拉菜单添加新选项 
     for (var i = 0; i < options.length; i++) {
@@ -304,13 +302,13 @@ function addChildOptions(options,parenttext) {
     }
 }
 
-
 window.onload = function () {
 
     sortOptions(languageSelect.options);
     sortOptions(child.options);
     
 };
+
 function sortOptions(options) {
     //var select = document.getElementById("mySelect"); // replace "mySelect" with the ID of your select element 
     var options = options;
@@ -325,9 +323,6 @@ function sortOptions(options) {
         languageSelect.appendChild(sorted[i]);
     }
 }
-
-
-
 
 if (synth.onvoiceschanged !== undefined) {
     synth.onvoiceschanged = populateVoiceList;
@@ -352,8 +347,6 @@ function speak(valueinput) {
         utterThis.onerror = function (event) {
             console.log("SpeechSynthesisUtterance.onerror");
         };
-
-
 
         const selectedOption =
             child.selectedOptions[0].getAttribute("data-name");
@@ -607,11 +600,11 @@ function CN_SendMessage(text) {
         $.post("home/chat", { role: "user", content: text, key: key }, function (response) {
             //var reuslt=  JSON.stringify(response);
             addChatMessage("Assistant: " + response.content);
-            CN_SayOutLoud(response.content.trim());
-     
+            //CN_SayOutLoud(response.content.trim());
+            speak(response.content);
         }).error(function (jqxhr, status, error) {
             alert("出现异常，请重新输入或说话：" + status);
-            CN_StartSpeechRecognitionDealy()
+            //CN_StartSpeechRecognitionDealy()
 
         });;
         messageInput.value = "";
@@ -861,7 +854,7 @@ function CN_InitScript() {
     };
 
     // Add icons on the top right corner
-    jQuery("body").append("<span style='position: fixed; top: 150px; right:650px; display: inline-block; " +
+    jQuery("body").append("<span style='position: fixed; top: 150px; right:30%; display: inline-block; " +
         "background: #888; color: white; padding: 8px; font-size: 16px; border-radius: 4px; text-align: center;" +
         "font-weight: bold; z-index: 1111;' id='TTGPTSettings'><a href='https://github.com/C-Nedelcu/talk-to-chatgpt' target=_blank title='Visit project website'>Talk-to-ChatGPT v1.6.1</a><br />" +
         "<span style='font-size: 16px;' class='CNStartZone'>" +
