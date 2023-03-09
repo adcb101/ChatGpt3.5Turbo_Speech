@@ -83,14 +83,18 @@ function sendMessage() {
 
         $.post("home/chat", { role: role, content: message, key: key }, function (response) {
             addChatMessage("Assistant: " + response.content);
-             //CN_SayOutLoud(response.content.trim());
 
-            speak(response.content);
+            // If speech recognition is active, disable it
+            if (CN_IS_LISTENING) CN_SPEECHREC.stop();
+
+             CN_SayOutLoud(response.content.trim());
+            CN_FINISHED = false;
+            //speak(response.content);
             // 处理响应数据
             //alert("Success");
         }).error(function (jqxhr, status, error) {
             alert("出现异常，请重新输入或说话：" + status);
-            //CN_StartSpeechRecognitionDealy();
+            CN_StartSpeechRecognition();
         });
         
         messageInput.value = '';
@@ -110,10 +114,12 @@ playButtons.forEach(playButton => {
         else {
             messageTextnew.push(messageText[1].trim())
         }
-        
-        //CN_SPEECHREC.stop();
-        speak(messageTextnew[0]);
-        //setTimeout(CN_SPEECHREC.start(), 2000)
+        // If speech recognition is active, disable it
+        if (CN_IS_LISTENING) CN_SPEECHREC.stop();
+        CN_SayOutLoud(messageTextnew[0]);
+        CN_FINISHED = false;
+        //speak(messageTextnew[0]);
+        //CN_SPEECHREC.start(); 
 
 
         console.log(messageTextnew[0]);
@@ -164,9 +170,12 @@ function addChatMessage(content) {
             messageTextnew.push(messageText[1].trim())
         }
         
-       // CN_SPEECHREC.stop();
-        speak(messageTextnew[0]);
-        //setTimeout(CN_SPEECHREC.start(), 2000)
+        // If speech recognition is active, disable it
+        if (CN_IS_LISTENING) CN_SPEECHREC.stop();
+        CN_SayOutLoud(messageTextnew[0]);
+        CN_FINISHED = false;
+        //speak(messageTextnew[0]);
+        //CN_SPEECHREC.start();
         console.log(messageTextnew[0]);
     });
 
@@ -360,6 +369,9 @@ function speak(valueinput) {
         utterThis.pitch = pitch.value;
         utterThis.rate = rate.value;
         synth.speak(utterThis);
+        utterThis.onend = () => {
+            CN_AfterSpeakOutLoudFinished();
+        }
     }
 }
 
@@ -472,8 +484,9 @@ function CN_SayOutLoud(text) {
         CN_AfterSpeakOutLoudFinished();
     }
     CN_IS_READING = true;
-    const isspeaking = synth.speaking;
+   // const isspeaking = synth.speaking;
     synth.speak(msg);
+    
 }
 
 // Occurs when speaking out loud is finished
@@ -600,14 +613,17 @@ function CN_SendMessage(text) {
         $.post("home/chat", { role: "user", content: text, key: key }, function (response) {
             //var reuslt=  JSON.stringify(response);
             addChatMessage("Assistant: " + response.content);
-            //CN_SayOutLoud(response.content.trim());
-            speak(response.content);
+            CN_SayOutLoud(response.content.trim());
+            CN_FINISHED = false;
+            //speak(response.content);
         }).error(function (jqxhr, status, error) {
             alert("出现异常，请重新输入或说话：" + status);
-            //CN_StartSpeechRecognitionDealy()
+            // If speech recognition is active, disable it
+            clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
+            CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 200);
 
-        });;
-        messageInput.value = "";
+        });
+        
         // Stop speech recognition until the answer is received
         if (CN_SPEECHREC) {
             clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
@@ -622,25 +638,21 @@ function CN_SendMessage(text) {
 
 // Start speech recognition using the browser's speech recognition API
 
-function CN_StartSpeechRecognition() {
-
-    setTimeout(CN_StartSpeechRecognitionDealy, 3000);
-}
-function CN_StartSpeechRecognitionDealy() {
-    if (!synth.speaking) {
+function CN_StartSpeechRecognition (){
+    
         if (CN_IS_READING) {
             clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
-            CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 3000);
+            CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 100);
             return;
         }
         if (!CN_SPEECH_REC_SUPPORTED) return;
-        CN_SPEECHREC = ('webkitSpeechRecognition' in window) ? new webkitSpeechRecognition() : new SpeechRecognition();
+        //CN_SPEECHREC = ('webkitSpeechRecognition' in window) ? new webkitSpeechRecognition() : new SpeechRecognition();
         CN_SPEECHREC.continuous = true;
         CN_SPEECHREC.lang = CN_WANTED_LANGUAGE_SPEECH_REC;
         CN_SPEECHREC.onstart = () => {
             // Make border red
             $("#TTGPTSettings").css("border-bottom", "8px solid red");
-
+            messageInput.value = "";
             CN_IS_LISTENING = true;
             console.log("I'm listening");
         };
@@ -687,8 +699,8 @@ function CN_StartSpeechRecognitionDealy() {
                 console.log("You said '" + CN_SAY_THIS_TO_SEND + "' - the message will be sent");
 
                 // Click button
-                jQuery("textarea").closest("div").find("button").click();
-
+                //jQuery("textarea").closest("div").find("button").click();
+                // sendButton.click();
                 // Stop speech recognition until the answer is received
                 if (CN_SPEECHREC) {
                     clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
@@ -703,7 +715,7 @@ function CN_StartSpeechRecognitionDealy() {
         if (!CN_IS_LISTENING && CN_SPEECH_REC_SUPPORTED && !CN_SPEECHREC_DISABLED) CN_SPEECHREC.start();
         clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
         CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 100);
-    }
+    
 }
 
 
@@ -713,7 +725,7 @@ function CN_StartSpeechRecognitionDealy() {
 function CN_KeepSpeechRecWorking() {
     if (CN_FINISHED) return; // Conversation finished
     clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
-    CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 2000);
+    CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 100);
     if (!CN_IS_READING && !CN_IS_LISTENING && !CN_PAUSED) {
         if (!CN_SPEECHREC)
             CN_StartSpeechRecognition();
@@ -758,7 +770,11 @@ function CN_ToggleButtonClick() {
 
             // Enable speech rec
             CN_SPEECHREC_DISABLED = false;
-            if (CN_SPEECHREC && !CN_IS_LISTENING && !CN_IS_READING) CN_SPEECHREC.start();
+            if (CN_SPEECHREC && !CN_IS_LISTENING && !CN_IS_READING)
+            {
+                CN_SPEECHREC.stop();
+                CN_SPEECHREC.start();
+            };
 
             return;
 
