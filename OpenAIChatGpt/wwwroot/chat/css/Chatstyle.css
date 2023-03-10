@@ -71,19 +71,34 @@ label {
 
 .chat-message {
     display: flex;
-    align-items: center;
+    /*align-items: top;*/
     margin-bottom: 10px;
 }
 
-.chat-message-content {
+.blur-div  {
+   
+    background-size: cover;
+    filter: blur(10px);
+    transition: filter 0.5s ease-in-out;
+}
+.blur-div .chat-message-content {
     background-color: #f5f5f5;
     border-radius: 5px;
     display: inline-block;
-    max-width: 80%;
+    max-width: 100%;
     padding: 10px;
-    margin-right: 10px;
+    margin-right: 0px;
+   
 }
-
+.chat-message-role {
+    background-color: #b5cee4;
+    border-radius: 5px;
+    display: inline-block;
+    max-width: 100%;
+    padding: 10px;
+    margin-right: 5px;
+    height: 20%;
+}
 .chat-message-actions {
     position: relative;
     display: inline-block;
@@ -92,7 +107,7 @@ label {
     .chat-message-actions .play-button {
         position: absolute;
         top: 0;
-        right: 0;
+        right: -10px;
         padding: 7px;
         background-color: lightblue;
         border: none;
@@ -102,9 +117,10 @@ label {
         background-repeat: no-repeat;
         background-size: contain;
     }
+    
 
         .chat-message-actions .play-button:hover {
-            background-color: lightgreen;
+            background-color: green;
         }
 
         .chat-message-actions .play-button:focus {

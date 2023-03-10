@@ -17,6 +17,7 @@ const sendButton = document.querySelector('#send-button');
 const chatHistory = document.querySelector('#chat-history');
 //const voiceInputButton = document.getElementById('voice-input-button');
 const playButtons = document.querySelectorAll('.play-button');
+
 const key = Math.random().toString();
 
 
@@ -79,16 +80,23 @@ function sendMessage() {
         // var data = { role = 'User', content = message };
         //httpRequest.ContentType = "application/json";
         var role = "user";
-        addChatMessage("User: " + message);
+        addChatMessage("User", message);
+        if (role == "user") {
+
+            $('.blur-div#User').css('filter', 'blur(0)');
+            //message.querySelector('.blur-div').filter('blur(0)'); 
+        }
 
         $.post("home/chat", { role: role, content: message, key: key }, function (response) {
-            addChatMessage("Assistant: " + response.content);
+            addChatMessage("Assistant" , response.content);
 
             // If speech recognition is active, disable it
             if (CN_IS_LISTENING) CN_SPEECHREC.stop();
 
              CN_SayOutLoud(response.content.trim());
             CN_FINISHED = false;
+
+            messageInput.value = "";
             //speak(response.content);
             // 处理响应数据
             //alert("Success");
@@ -100,57 +108,81 @@ function sendMessage() {
         messageInput.value = '';
     }
 }
-playButtons.forEach(playButton => {
-    const messageContent = playButton.parentNode.previousElementSibling;
-
-    playButton.addEventListener('click', () => {
-        const messageText = messageContent.textContent.trim().split(":");
-        const messageTextnew = [];
-        if (messageText.length > 2) {
-            for (var i = 1; i < messageText.length; i++) {
-                messageTextnew.push(...messageText[i].trim());
-            }
-        }
-        else {
-            messageTextnew.push(messageText[1].trim())
-        }
-        // If speech recognition is active, disable it
-        if (CN_IS_LISTENING) CN_SPEECHREC.stop();
-        CN_SayOutLoud(messageTextnew[0]);
-        CN_FINISHED = false;
-        //speak(messageTextnew[0]);
-        //CN_SPEECHREC.start(); 
 
 
-        console.log(messageTextnew[0]);
-    });
-});
+//playButtons.forEach(playButton => {
+//    const messageContent = playButton.parentNode.previousElementSibling;
 
-function createChatMessage(content) {
+//    playButton.addEventListener('click', () => {
+//        const messageText = messageContent.textContent.trim().split(":");
+//        const messageTextnew = [];
+//        if (messageText.length > 2) {
+//            for (var i = 1; i < messageText.length; i++) {
+//                messageTextnew.push(...messageText[i].trim());
+//            }
+//        }
+//        else {
+//            messageTextnew.push(messageText[1].trim())
+//        }
+//        // If speech recognition is active, disable it
+//        if (CN_IS_LISTENING) CN_SPEECHREC.stop();
+//        CN_SayOutLoud(messageTextnew[0]);
+//        CN_FINISHED = false;
+//        //speak(messageTextnew[0]);
+//        //CN_SPEECHREC.start(); 
+
+
+//        console.log(messageTextnew[0]);
+//    });
+
+   
+//});
+
+function createChatMessage(role, content) {
     const message = document.createElement('div');
     message.classList.add('chat-message');
+
+
+
+    
+
+    const messageContentRole = document.createElement('div');
+    messageContentRole.classList.add('chat-message-role');
+    messageContentRole.textContent = role + ": ";
+
+    const blurmessageContent = document.createElement('div');
+    blurmessageContent.classList.add('blur-div');
+   
+    
 
     const messageContent = document.createElement('div');
     messageContent.classList.add('chat-message-content');
     messageContent.textContent = content;
+    blurmessageContent.appendChild(messageContent);
+
 
     const messageActions = document.createElement('div');
     messageActions.classList.add('chat-message-actions');
-
     const playButton = document.createElement('button');
     playButton.classList.add('play-button');
     playButton.title = 'Listen to message';
-
     messageActions.appendChild(playButton);
-    message.appendChild(messageContent);
+
+    message.appendChild(messageContentRole);
+    message.appendChild(blurmessageContent);
     message.appendChild(messageActions);
 
     return message;
 }
 
 // 添加新聊天消息
-function addChatMessage(content) {
-    const message = createChatMessage(content);
+function addChatMessage(role, content) {
+    const message = createChatMessage(role, content);
+    if (role == 'User') {
+        const box = message.querySelector('.blur-div');
+
+        box.setAttribute('id', role);
+    }
     chatHistory.appendChild(message);
 
     // 绑定播放按钮事件
@@ -159,25 +191,45 @@ function addChatMessage(content) {
     playButton.addEventListener('click', () => {
         //const messageText = messageContent.textContent.trim();
         //speak(messageText);
-        const messageText = messageContent.textContent.trim().split(":");
-        const messageTextnew = [];
-        if (messageText.length > 2) {
-            for (var i = 1; i < messageText.length; i++) {
-                messageTextnew.push(messageText[i].trim());
-            }
-        }
-        else {
-            messageTextnew.push(messageText[1].trim())
-        }
+        const messageText = messageContent.textContent.trim();
+        //const messageTextnew = [];
+        //if (messageText.length > 2) {
+        //    for (var i = 1; i < messageText.length; i++) {
+        //        messageTextnew.push(messageText[i].trim());
+        //    }
+        //}
+        //else {
+        //    messageTextnew.push(messageText[1].trim())
+        //}
         
         // If speech recognition is active, disable it
         if (CN_IS_LISTENING) CN_SPEECHREC.stop();
-        CN_SayOutLoud(messageTextnew[0]);
+        CN_SayOutLoud(messageText);
         CN_FINISHED = false;
         //speak(messageTextnew[0]);
         //CN_SPEECHREC.start();
-        console.log(messageTextnew[0]);
+        console.log(messageText);
     });
+
+    const blurmessagecontent = message.querySelector('.blur-div');
+    let blurEnabled = false;
+    
+        blurEnabled=false
+    
+    
+    //chat-message-content
+    blurmessagecontent.addEventListener('click', function () {
+        if (!blurEnabled) {
+            blurmessagecontent.style.filter = "blur(0)";
+            //blurToggle.textContent = "关闭模糊";
+        } else {
+            
+            blurmessagecontent.style.filter = "blur(10px)";
+            //blurToggle.textContent = "开启模糊";
+        }
+        blurEnabled = !blurEnabled;
+    });
+   
 
 }
 
@@ -616,6 +668,7 @@ function CN_SendMessage(text) {
             addChatMessage("Assistant: " + response.content);
             CN_SayOutLoud(response.content.trim());
             CN_FINISHED = false;
+            messageInput.value = "";
             //speak(response.content);
         }).error(function (jqxhr, status, error) {
             alert("出现异常，请重新输入或说话：" + status);
@@ -654,7 +707,6 @@ function CN_StartSpeechRecognition (){
         CN_SPEECHREC.onstart = () => {
             // Make border red
             $("#TTGPTSettings").css("border-bottom", "8px solid red");
-            messageInput.value = "";
             CN_IS_LISTENING = true;
             console.log("I'm listening");
         };
