@@ -1,5 +1,4 @@
 
-
 var synth = window.speechSynthesis;
 //var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition
 //var CN_SPEECHREC = new SpeechRecognition  
@@ -110,41 +109,10 @@ function sendMessage() {
 }
 
 
-//playButtons.forEach(playButton => {
-//    const messageContent = playButton.parentNode.previousElementSibling;
-
-//    playButton.addEventListener('click', () => {
-//        const messageText = messageContent.textContent.trim().split(":");
-//        const messageTextnew = [];
-//        if (messageText.length > 2) {
-//            for (var i = 1; i < messageText.length; i++) {
-//                messageTextnew.push(...messageText[i].trim());
-//            }
-//        }
-//        else {
-//            messageTextnew.push(messageText[1].trim())
-//        }
-//        // If speech recognition is active, disable it
-//        if (CN_IS_LISTENING) CN_SPEECHREC.stop();
-//        CN_SayOutLoud(messageTextnew[0]);
-//        CN_FINISHED = false;
-//        //speak(messageTextnew[0]);
-//        //CN_SPEECHREC.start(); 
-
-
-//        console.log(messageTextnew[0]);
-//    });
-
-   
-//});
 
 function createChatMessage(role, content) {
     const message = document.createElement('div');
     message.classList.add('chat-message');
-
-
-
-    
 
     const messageContentRole = document.createElement('div');
     messageContentRole.classList.add('chat-message-role');
@@ -180,7 +148,6 @@ function addChatMessage(role, content) {
     const message = createChatMessage(role, content);
     if (role == 'User') {
         const box = message.querySelector('.blur-div');
-
         box.setAttribute('id', role);
     }
     chatHistory.appendChild(message);
@@ -188,20 +155,11 @@ function addChatMessage(role, content) {
     // 绑定播放按钮事件
     const playButton = message.querySelector('.play-button');
     const messageContent = message.querySelector('.chat-message-content');
-    playButton.addEventListener('click', () => {
+    playButton.addEventListener('dblclick', () => {
         //const messageText = messageContent.textContent.trim();
         //speak(messageText);
         const messageText = messageContent.textContent.trim();
-        //const messageTextnew = [];
-        //if (messageText.length > 2) {
-        //    for (var i = 1; i < messageText.length; i++) {
-        //        messageTextnew.push(messageText[i].trim());
-        //    }
-        //}
-        //else {
-        //    messageTextnew.push(messageText[1].trim())
-        //}
-        
+       
         // If speech recognition is active, disable it
         if (CN_IS_LISTENING) CN_SPEECHREC.stop();
         CN_SayOutLoud(messageText);
@@ -213,12 +171,8 @@ function addChatMessage(role, content) {
 
     const blurmessagecontent = message.querySelector('.blur-div');
     let blurEnabled = false;
-    
-        blurEnabled=false
-    
-    
     //chat-message-content
-    blurmessagecontent.addEventListener('click', function () {
+    blurmessagecontent.addEventListener('dblclick', function () {
         if (!blurEnabled) {
             blurmessagecontent.style.filter = "blur(0)";
             //blurToggle.textContent = "关闭模糊";
@@ -371,7 +325,6 @@ window.onload = function () {
 };
 
 function sortOptions(options) {
-    //var select = document.getElementById("mySelect"); // replace "mySelect" with the ID of your select element 
     var options = options;
     var sorted = [];
     for (var i = 0; i < options.length; i++) { sorted.push(options[i]); }
@@ -662,16 +615,22 @@ function CN_SendMessage(text) {
     // Send the message, if autosend is enabled
     if (CN_AUTO_SEND_AFTER_SPEAKING) {
         //jQuery("textarea").closest("div").find("button").click();
-        addChatMessage("User: " + text);
-        $.post("home/chat", { role: "user", content: text, key: key }, function (response) {
+        addChatMessage("User", text);
+        const role = "user";
+        if (role == "user") {
+
+            $('.blur-div#User').css('filter', 'blur(0)');
+            //message.querySelector('.blur-div').filter('blur(0)'); 
+        }
+        $.post("home/chat", { role: role, content: text, key: key }, function (response) {
             //var reuslt=  JSON.stringify(response);
-            addChatMessage("Assistant: " + response.content);
+            addChatMessage("Assistant" , response.content);
             CN_SayOutLoud(response.content.trim());
             CN_FINISHED = false;
             messageInput.value = "";
             //speak(response.content);
         }).error(function (jqxhr, status, error) {
-            alert("出现异常，请重新输入或说话：" + status);
+            alert("出现异常， 请刷新：" + status);
             // If speech recognition is active, disable it
             clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
             CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 200);
@@ -773,8 +732,6 @@ function CN_StartSpeechRecognition (){
         
     
 }
-
-
 
 
 // Make sure the speech recognition is turned on when the bot is not speaking
@@ -882,7 +839,7 @@ function CN_StartTTGPT() {
 
         // Check for new messages
         //CN_CheckNewMessages();
-    }, 1000);
+    }, 100);
 }
 
 // Perform initialization after jQuery is loaded
@@ -920,9 +877,9 @@ function CN_InitScript() {
         }
 
         // Voice OK
-        setTimeout(function () {
+        //setTimeout(function () {
             //CN_SayOutLoud("OK");
-        }, 1000);
+        //}, 100);
     };
 
     // Add icons on the top right corner
