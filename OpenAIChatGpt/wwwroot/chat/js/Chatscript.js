@@ -682,11 +682,6 @@ function CN_SendMessage(text) {
         //jQuery("textarea").closest("div").find("button").click();
         addChatMessage("User", text);
         const role = "user";
-        //if (role == "user") {
-
-        //    $('.blur-div#User').css('filter', 'blur(0)');
-        //    //message.querySelector('.blur-div').filter('blur(0)'); 
-        //}
         $.post("home/chat", {
             role: role,
             content: text,

@@ -19,7 +19,7 @@ namespace OpenAIChatGpt
                 //options.DeploymentId = "MyDeploymentId";
                 //options.ResourceName = "MyResourceName";
             });
-            // ¨Ï¥Î¤é§Ó
+            
             builder.Host.UseSerilog((context, logger) =>
             {
                 logger.ReadFrom.Configuration(context.Configuration);
@@ -28,12 +28,7 @@ namespace OpenAIChatGpt
             });
             builder.Services.AddScoped<IChatGptSevice, ChatGptSevice>();
             builder.Services.AddMemoryCache();
-            builder.Services.AddHttpClient("ChatGptSevice").ConfigurePrimaryHttpMessageHandler(_ => new HttpClientHandler
-            {
-                ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; }
-
-            });
-
+           
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -46,10 +41,7 @@ namespace OpenAIChatGpt
             app.UseRouting();
 
             app.UseAuthorization();
-            //app.UseForwardedHeaders(new ForwardedHeadersOptions
-            //{
-            //    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-            //});
+
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
