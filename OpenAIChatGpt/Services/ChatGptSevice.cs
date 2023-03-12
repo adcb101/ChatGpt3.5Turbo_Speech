@@ -26,7 +26,7 @@ namespace OpenAIChatGpt.Services
                 var openAiService = _serviceProvider.GetRequiredService<IOpenAIService>();
                 var cache = _serviceProvider.GetRequiredService<IMemoryCache>();
                 
-        List<ChatMessage> chatMessages = new List<ChatMessage>();
+                List<ChatMessage> chatMessages = new List<ChatMessage>();
 
                 ChatMessage messageUser = new ChatMessage(role, content);
                 chatMessages.Add(messageUser);
@@ -35,6 +35,8 @@ namespace OpenAIChatGpt.Services
                 {
                     externalList.Add(messageUser);
                     chatMessages.Clear();
+                    if (externalList.Count>10)
+                        externalList.RemoveRange(0, externalList.Count - 4);
                     chatMessages = externalList;
 
                 }
