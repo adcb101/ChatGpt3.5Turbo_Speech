@@ -82,7 +82,7 @@ skipButton.addEventListener('click', function (event) {
 });
 let micEnabled = false;
 micButton.addEventListener('click', function (event) {
-
+    $('.alert').alert()
     if (!micEnabled) {
 
         micButton.innerHTML = "🎙️"
@@ -99,7 +99,7 @@ micButton.addEventListener('click', function (event) {
         micButton.innerHTML = "🤫"
         micButton.title = 'Microphone On';
         // Disable speech rec
-       
+
         CN_SPEECHREC_DISABLED = true;
         if (CN_SPEECHREC && CN_IS_LISTENING) CN_SPEECHREC.stop();
     }
@@ -136,18 +136,10 @@ function sendMessage() {
         var role = "user";
         addChatMessage("User", message);
 
-        $.post("home/chat", {
-            role: role,
-            content: message,
-            key: key
-        }, function (response) {
+        $.post("home/chat", { role: role,content: message,key: key
+        }).done(function (response) {
             addChatMessage("Assistant", response.content);
-            if (role != "Assistant" && isAllBlur) {
-                $('.blur-div').css('filter', 'blur(10px)');
-                $('.blur-div#User').css('filter', 'blur(0)');
-                //message.querySelector('.blur-div').filter('blur(0)'); 
-            }
-
+           
             if (auEnabled) {
                 // If speech recognition is active, disable it
                 if (CN_IS_LISTENING) CN_SPEECHREC.stop();
@@ -160,15 +152,13 @@ function sendMessage() {
             };
             messageInput.value = "";
             // 处理响应数据
-        }).error(function (jqxhr, status, error) {
-            alert("出现异常，请重新输入或说话：" + status);
-            if (micEnabled) {
-                clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
-                CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 200);
-            };
-
+        }).fail(function (xhr) {
+                 alert("出现异常，请重新输入或说话");
+                if (micEnabled) {
+                    clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
+                    CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 200);
+          };
         });
-
         messageInput.value = '';
     }
 }
@@ -211,10 +201,14 @@ function createChatMessage(role, content) {
 // 添加新聊天消息
 function addChatMessage(role, content) {
     const message = createChatMessage(role, content);
+    const box = message.querySelector('.blur-div');
     if (role == 'User') {
-        const box = message.querySelector('.blur-div');
         box.setAttribute('id', role);
     }
+     if (role == "Assistant" && isAllBlur) {
+       
+         box.style.filter = "blur(10px)";
+     }
     chatHistory.appendChild(message);
 
     // 绑定播放按钮事件
@@ -589,7 +583,7 @@ function CN_AfterSpeakOutLoudFinished() {
             }
         }, 1000);
     }
-    
+
 }
 
 function CN_KeepSpeechSynthesisActive() {
@@ -703,13 +697,7 @@ function CN_SendMessage(text) {
         }, function (response) {
             //var reuslt=  JSON.stringify(response);
             addChatMessage("Assistant", response.content);
-            if (role != "Assistant" && isAllBlur) {
-
-               
-                $('.blur-div').css('filter', 'blur(10px)');
-                $('.blur-div#User').css('filter', 'blur(0)');
-                //message.querySelector('.blur-div').filter('blur(0)'); 
-            }
+           
             if (auEnabled) {
                 // If speech recognition is active, disable it
                 //if (CN_IS_LISTENING) CN_SPEECHREC.stop();
@@ -723,14 +711,12 @@ function CN_SendMessage(text) {
             }
             messageInput.value = "";
             //speak(response.content);
-        }).error(function (jqxhr, status, error) {
-            alert("出现异常， 请刷新：" + status);
-            // If speech recognition is active, disable it
+        }).fail(function (xhr, status, error) {
+            alert("出现异常，请重新输入或说话");
             if (micEnabled) {
-                clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
-
-                CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 200);
-            };
+                    clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
+                    CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 200);
+          };
         });
 
         // Stop speech recognition until the answer is received
@@ -848,7 +834,7 @@ function CN_KeepSpeechRecWorking() {
                 try {
                     if (CN_SPEECH_REC_SUPPORTED && !synth.speaking && !CN_SPEECHREC_DISABLED)
                         CN_SPEECHREC.start();
-                } catch (e) {}
+                } catch (e) { }
             }
         }
     }
@@ -864,7 +850,7 @@ function CN_ToggleButtonClick() {
             CN_OnSettingsIconClick();
             return;
 
-            // The microphone is on. Turn it off
+        // The microphone is on. Turn it off
         case "micon":
             // Show other icon and hide this one
             $(this).css("display", "none");
@@ -876,7 +862,7 @@ function CN_ToggleButtonClick() {
 
             return;
 
-            // The microphone is off. Turn it on
+        // The microphone is off. Turn it on
         case "micoff":
             // Show other icon and hide this one
             $(this).css("display", "none");
@@ -891,7 +877,7 @@ function CN_ToggleButtonClick() {
 
             return;
 
-            // The bot's voice is on. Turn it off
+        // The bot's voice is on. Turn it off
         case "speakon":
             // Show other icon and hide this one
             $(this).css("display", "none");
@@ -904,7 +890,7 @@ function CN_ToggleButtonClick() {
             CN_CURRENT_MESSAGE = null; // Remove current message
             return;
 
-            // The bot's voice is off. Turn it on
+        // The bot's voice is off. Turn it on
         case "speakoff":
             // Show other icon and hide this one
             $(this).css("display", "none");
@@ -913,7 +899,7 @@ function CN_ToggleButtonClick() {
 
             return;
 
-            // Skip current message being read
+        // Skip current message being read
         case "skip":
             synth.pause(); // Pause, and then...
             synth.cancel(); // Cancel everything
