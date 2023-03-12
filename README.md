@@ -5,7 +5,7 @@
 </h1>
 
 <p align="center">
-  为语言学习者设计的口语对话web，后端基于asp.net core 6.0，接口采用OpenAi公司提供的最新ChatGpt3.5 Turbo Api
+  为语言学习者设计的口语对话web，后端基于asp.net core 7.0，接口采用OpenAi公司提供的最新ChatGpt3.5 Turbo Api
 </p>
 <p align="center">
   界面虽简，不乏为你的生活学习解闷好帮手 (●ˇ∀ˇ●)
@@ -16,7 +16,7 @@
 </p>
 
 <div align=center>
-<img  src="doc/blank.png"/>
+<img  src="doc/updateBlank.jpg"/>
 </div>
 
 
@@ -34,10 +34,20 @@ ChatGpt3.5 Turbo Api 已经开放，可惜不像之前的接口无需科学上�
 
 
 <div align=center>
-<img  src="doc/display.png"/>
+<img  src="doc/updateFuntions.png"/>
 </div>
 
-<br />
+### 🥂 UpdateFuntions
+
+#### 2023/03/12
+
+1.全局控制AI回复内容是否虚化，默认不虚化，单击切换；<br />
+2.跳过正在播放的内容；<br />
+3.控制麦克风按钮，默认关闭，单击切换；<br />
+4.控制扬声器按钮，默认关闭，单击切换；<br />
+5.声音回放按钮；<br />
+6.开启虚化后，可单击内容框控制此条内容是否虚化。<br />
+
 <br />
 
 #### 🎈 Tips
