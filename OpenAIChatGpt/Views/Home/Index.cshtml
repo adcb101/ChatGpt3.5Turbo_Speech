@@ -1,63 +1,77 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "ChatGpt Speech Recognition || Synthesiser";
 }
-<link rel="stylesheet" href="~/chat/css/Chatstyle.css?version=1.3.1" type="text/css"/>
+<link rel="stylesheet" href="~/chat/css/Chatstyle.css?version=1.3.1" type="text/css" />
+<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" type="text/css" />
 
-
-
-<h2>ChatGpt Speech Recognition || Synthesiser</h2>
-
-<p>
-    Enter some text in the input below and press Enter or the "Send" button
-    to hear it. change voices using the dropdown menu.
-</p>
-<div class="select-wrapper">
-    <select id="Languages" style="cursor:pointer;">
-    </select>
-    <select id="Voices" style="cursor:pointer;">
-    </select>
-</div>
-<div style="margin-top:15px;">
-    <label for="rate">Rate</label><input style="cursor:pointer;" type="range" min="0.5" max="2" value="1" step="0.1" id="rate" />
-    <div class="rate-value" style="cursor:pointer;">1</div>
-    <div class="clearfix" style="cursor:pointer;"></div>
-</div>
-
-<div style="margin-top:15px  ">
-    <label for="pitch">Pitch</label><input style="cursor:pointer;" type="range" min="0" max="2" value="1" step="0.13" id="pitch" />
-    <div class="pitch-value">1</div>
-    <div class="clearfix"></div>
-</div>
-<div id="chat-container" style="margin-top:15px;cursor:pointer ">
-    <div id="chat-history">
-        <div class="chat-message">
-            @* <div class="blur-div">
-                  <div class="chat-message-content">
-
-                   </div>
-             </div>
-            
-              <div class="chat-message-actions">
-              <button class="play-button" title="Listen to message"></button>
-            </div> *@
+<body style="padding: 0; font-family:  Helvetica Neue, sans-serif;">
+    <header style=" height:150px; background-color: #007AFF;   color: #fff;    padding: 5px;    border-radius: 5px;">
+        <h1 style="margin-top:2%">ChatGpt Speech Recognition || Synthesiser</h1>
+    </header>
+    <main style="margin-left:10px;margin-bottom:10px">
+        <div class="intro">
+            <p>
+                Enter some text in the input below and press Enter or the "Send" button to hear it. Change voices using
+                the dropdown menu.
+            </p>
         </div>
-    </div>
+        <div class="options">
+            <label for="aivoice" style="margin-right:20px;">AiVoice:</label>
+            <select id="Languages" style="cursor:pointer">
+            </select>
+            <select id="Voices" style="margin-left:10px;cursor:pointer">
+            </select>
 
-</div>
+        </div>
+        <div class="options">
+            <label for="uservoice" style="margin-right:20px;cursor:pointer">UserVoice:</label>
+            <select id="Spoken" style="cursor:pointer">
+            </select>
+            <button class="btn btn-primary" id="audiobutton" title="Speaker On" style="margin-left:10px;background: rgb(136, 136, 136); border-width: 4px 4px 4px;border-style: solid;border-color: rgb(136, 136, 136) ;">🔇</button>
+            <button class="btn btn-primary" id="mircbtn" title="Microphone On" style="margin-left:10px ;background: rgb(136, 136, 136); border-width: 4px 4px 4px;border-style: solid;border-color: rgb(136, 136, 136)  ;">🤫</button>
+            <button class="btn btn-primary" id="skipbtn" title="Skip" style="margin-left:10px ;background: rgb(136, 136, 136); border-width: 4px 4px 4px;border-style: solid;border-color: rgb(136, 136, 136)  ;">⏩</button>
+            <button id="blur-button" class="btn btn-primary" title="Blur On" style="margin-left:10px ;background: rgb(136, 136, 136); border-width: 4px 4px 4px;border-style: solid;border-color: rgb(136, 136, 136)  ;">
+                <img src="~/chat/pic/blur.png" alt="Blur" width="24" height="24" class="lzy lazyload--done">
+            </button>
+        </div>
+        <div style="margin-top:10px;">
+            <label for="rate">Rate:</label>
+            <input style="cursor:pointer;" type="range" min="0.5" max="2" value="1" step="0.1" id="rate" />
+            <div class="rate-value">1</div>
+            <div class="clearfix"></div>
+        </div>
 
-@*<div style="margin-top:15px ">
-    <select id="Languages" style="cursor:pointer;"></select>
-    <select id="Voices" style="cursor:pointer;"></select>
-</div>*@
+        <div style="margin-top:10px  ">
+            <label for="pitch">Pitch:</label>
+            <input style="cursor:pointer;" type="range" min="0" max="2" value="1" step="0.13" id="pitch" />
+            <div class="pitch-value">1</div>
+            <div class="clearfix"></div>
+        </div>
+
+        <div id="chat-container" style="margin-top:10px;cursor:pointer ">
+
+            <div id="chat-history">
+                <div class="chat-message">
+                </div>
+            </div>
+
+        </div>
+        <div id="chat-input" style="margin-top:10px">
+            <input type="text" id="message-input" placeholder="Type your message here...">
+            <button id="send-button" class="btn btn-primary" style="height:50px;width:70px;background: rgb(136, 136, 136); border-width: 4px 4px 4px;border-style: solid;border-color: rgb(136, 136, 136)  ;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
+                    <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11ZM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07Zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493Z" />
+                </svg>
+
+            </button>
+        </div>
+    </main>
+    <script src="~/lib/jquery/dist/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="~/chat/js/Chatscript.js?version=1.1.6"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+</body>
 
 
-<div id="chat-input" style="margin-top:15px">
-    <input type="text" id="message-input" placeholder="Type your message here...">
-    <button id="send-button" style="cursor:pointer;">Send</button>
-    @*<button id="voice-input-button">Speak</button>*@
-</div>
-
-<script type="text/javascript" src="~/chat/js/Chatscript.js?version=1.1.6"></script>
 
 
 

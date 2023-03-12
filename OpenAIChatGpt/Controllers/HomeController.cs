@@ -35,10 +35,8 @@ namespace OpenAIChatGpt.Controllers
         {
             try
             {
-
                 //string x = "ni";
                 //Convert.ToInt32(x);
-                
                 ChatMessage chatMessage = await _chatGptSevice.ChatAsync(role, content, key);
                 return Ok(chatMessage);
                

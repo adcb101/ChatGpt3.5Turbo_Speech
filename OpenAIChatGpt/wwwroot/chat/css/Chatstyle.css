@@ -1,49 +1,81 @@
-
-body, html {
-    margin: 0;
-}
-
-html {
-    height: 100%;
-}
-
 body {
-    height: 80%;
-    max-width: 70%;
-    margin: 0 auto;
+    padding: 0;
+    font-family: "Helvetica Neue", sans-serif;
 }
 
+header {
+    background-color: #007AFF;
+    color: #fff;
+    padding: 1px;
+    border-radius: 5px;
+}
 
+.main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1em;
+    border-radius: 5px;
+}
+
+.intro {
+    margin-bottom: 1em;
+}
+
+select {
+    width: 250px;
+    padding: 10px;
+    margin-left: 15px;
+    background-color: lightcyan;
+    border: none;
+    border-radius: 5px;
+    box-shadow: 0 0 5px #ccc;
+    font-size: 16px;
+    font-family: 'Microsoft YaHei UI', sans-serif;
+    color: #666;
+}
+
+select option {
+    font-size: 16px;
+    font-family: 'Microsoft YaHei UI', sans-serif;
+    color: #666
+}
+
+.options {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+
+#rate,
+#pitch {
+    margin-right: 0.5em;
+    align-items: center;
+    margin-bottom: 1em;
+    width: 30%;
+}
 
 label {
-    float: left;
+    margin-right: 0.5em;
     width: 5%;
     line-height: 1.5;
 }
 
-.rate-value, .pitch-value {
-    float: left;
+.rate-value,
+.pitch-value {
+    margin-right: 55%;
+    float: right;
     width: 5%;
     line-height: 1.5;
 }
 
-#rate, #pitch {
-    float: left;
-    width: 50%;
-}
-
-.controls {
-    text-align: center;
-    margin-top: 10px;
-}
-
-.controls button {
-    padding: 10px;
-}
 
 #chat-container {
-    width: 80%;
-    height: 60%;
+    margin-top: 10px;
+    border: 2px solid #4CD964;
+    width: 70%;
+    height: 45%;
     background-color: #fff;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -59,13 +91,12 @@ label {
 
 .chat-message {
     display: flex;
-    /*align-items: top;*/
     margin-bottom: 10px;
 }
 
 .blur-div {
     background-size: cover;
-    filter: blur(10px);
+    filter: blur(0);
     transition: filter 0.5s ease-in-out;
 }
 
@@ -76,7 +107,7 @@ label {
     max-width: 100%;
     padding: 10px;
     margin-right: 0px;
-    }
+}
 
 .chat-message-role {
     background-color: #b5cee4;
@@ -116,53 +147,55 @@ label {
     outline: none;
 }
 
-
+#chat-input {
+    margin-top: 1em;
+    display: flex;
+    align-items: center;
+    width: 70%;
+}
 
 #message-input {
-    flex: 3;
+    flex-grow: 1;
+    margin-right: 1em;
+    border: 2px solid #F2F2F7;
+    color: #1C1C1E;
+    /* flex: 3; */
     padding: 5px;
     border: 1px solid #ccc;
     border-radius: 5px;
     height: 50px;
-    width: 55%;
+    width: 40%;
 }
 
-#send-button {
-    width: 70px;
-    margin-left: 10px;
-    background-color: #4CAF50;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    height: 50px;
+.blur-div {
+    background-size: cover;
+    filter: blur(0);
+    transition: filter 0.5s ease-in-out;
 }
 
-/*#voice-input-button {
-    width: 70px;
-    margin-left: 10px;
-    background-color: #4CAF50;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    height: 30px;
-}*/
-select {
-    width: 250px;
-    padding: 10px;
-    margin-left: 15px;
-    background-color: lightcyan;
-    border: none;
-    border-radius: 5px;
-    box-shadow: 0 0 5px #ccc;
-    font-size: 16px;
-    font-family: 'Microsoft YaHei UI', sans-serif;
-    color: #666;
+
+
+@media only screen and (max-width: 657px) {
+    .options {
+        flex-direction: column;
+    }
+
+    .select-wrapper {
+        margin-right: 0;
+        margin-bottom: 0.5em;
+    }
+
+    #blur-button {
+        margin-top: 0.5em;
+    }
 }
 
-select option {
-    font-size: 16px;
-    font-family: 'Microsoft YaHei UI', sans-serif;
-    color: #666;
+@media only screen and (max-width: 464px) {
+    .main {
+        padding: 0.5em;
+    }
+
+    .chat-history {
+        max-height: 250px;
+    }
 }

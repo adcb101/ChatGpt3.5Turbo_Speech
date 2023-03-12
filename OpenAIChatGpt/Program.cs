@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.HttpOverrides;
 using OpenAI.GPT3.Extensions;
 using OpenAIChatGpt.Services;
 using Serilog;
@@ -27,6 +28,11 @@ namespace OpenAIChatGpt
             });
             builder.Services.AddScoped<IChatGptSevice, ChatGptSevice>();
             builder.Services.AddMemoryCache();
+            builder.Services.AddHttpClient("ChatGptSevice").ConfigurePrimaryHttpMessageHandler(_ => new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; }
+
+            });
 
             var app = builder.Build();
 
@@ -40,7 +46,10 @@ namespace OpenAIChatGpt
             app.UseRouting();
 
             app.UseAuthorization();
-
+            //app.UseForwardedHeaders(new ForwardedHeadersOptions
+            //{
+            //    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            //});
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
