@@ -88,6 +88,7 @@ micButton.addEventListener('click', function (event) {
         micButton.innerHTML = "🎙️"
         micButton.title = 'Microphone Off';
         CN_FINISHED = false;
+        CN_SPEECHREC_DISABLED = false;
         setTimeout(function () {
             // Start speech rec
             CN_StartSpeechRecognition();
@@ -98,6 +99,7 @@ micButton.addEventListener('click', function (event) {
         micButton.innerHTML = "🤫"
         micButton.title = 'Microphone On';
         // Disable speech rec
+       
         CN_SPEECHREC_DISABLED = true;
         if (CN_SPEECHREC && CN_IS_LISTENING) CN_SPEECHREC.stop();
     }
@@ -140,6 +142,11 @@ function sendMessage() {
             key: key
         }, function (response) {
             addChatMessage("Assistant", response.content);
+            if (role != "Assistant" && isAllBlur) {
+                $('.blur-div').css('filter', 'blur(10px)');
+                $('.blur-div#User').css('filter', 'blur(0)');
+                //message.querySelector('.blur-div').filter('blur(0)'); 
+            }
 
             if (auEnabled) {
                 // If speech recognition is active, disable it
@@ -147,12 +154,17 @@ function sendMessage() {
                 CN_SayOutLoud(response.content.trim());
                 CN_FINISHED = false;
             }
+            if (!auEnabled && micEnabled) {
+                clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
+                CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 200);
+            };
             messageInput.value = "";
             // 处理响应数据
         }).error(function (jqxhr, status, error) {
             alert("出现异常，请重新输入或说话：" + status);
             if (micEnabled) {
-                CN_StartSpeechRecognition();
+                clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
+                CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 200);
             };
 
         });
@@ -232,7 +244,6 @@ function addChatMessage(role, content) {
             } else {
 
                 blurmessagecontent.style.filter = "blur(10px)";
-
             }
             blurEnabled = !blurEnabled;
             console.log(blurEnabled);
@@ -541,7 +552,7 @@ function CN_SayOutLoud(text) {
         // If speech recognition is active, disable it
         if (CN_IS_LISTENING) CN_SPEECHREC.stop();
 
-        if (CN_FINISHED) return;
+        //if (CN_FINISHED) return;
         CN_IS_READING = true;
         clearTimeout(CN_TIMEOUT_KEEP_SYNTHESIS_WORKING);
         CN_TIMEOUT_KEEP_SYNTHESIS_WORKING = setTimeout(CN_KeepSpeechSynthesisActive, 5000);
@@ -560,7 +571,7 @@ function CN_AfterSpeakOutLoudFinished() {
     // Make border grey again
     $("#TTGPTSettings").css("border", "2px solid #888");
 
-    if (CN_FINISHED) return;
+    //if (CN_FINISHED) return;
 
     // Finished speaking
     clearTimeout(CN_TIMEOUT_KEEP_SYNTHESIS_WORKING);
@@ -569,13 +580,16 @@ function CN_AfterSpeakOutLoudFinished() {
     // restart listening
     CN_IS_READING = false;
     console.log("CN_AfterSpeakOutLoudFinished:" + CN_IS_READING);
-    setTimeout(function () {
-        if (!synth.speaking) {
-            if (CN_SPEECH_REC_SUPPORTED && CN_SPEECHREC && !CN_IS_LISTENING && !CN_PAUSED && !CN_SPEECHREC_DISABLED) CN_SPEECHREC.start();
-            clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
-            CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 1000);
-        }
-    }, 1000);
+    if (micEnabled) {
+        setTimeout(function () {
+            if (!synth.speaking) {
+                if (CN_SPEECH_REC_SUPPORTED && CN_SPEECHREC && !CN_IS_LISTENING && !CN_PAUSED && !CN_SPEECHREC_DISABLED) CN_SPEECHREC.start();
+                clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
+                CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 1000);
+            }
+        }, 1000);
+    }
+    
 }
 
 function CN_KeepSpeechSynthesisActive() {
@@ -689,13 +703,24 @@ function CN_SendMessage(text) {
         }, function (response) {
             //var reuslt=  JSON.stringify(response);
             addChatMessage("Assistant", response.content);
+            if (role != "Assistant" && isAllBlur) {
+
+               
+                $('.blur-div').css('filter', 'blur(10px)');
+                $('.blur-div#User').css('filter', 'blur(0)');
+                //message.querySelector('.blur-div').filter('blur(0)'); 
+            }
             if (auEnabled) {
                 // If speech recognition is active, disable it
                 //if (CN_IS_LISTENING) CN_SPEECHREC.stop();
                 CN_SayOutLoud(response.content.trim());
                 CN_FINISHED = false;
             }
+            if (!auEnabled && micEnabled) {
+                clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
 
+                CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 200);
+            }
             messageInput.value = "";
             //speak(response.content);
         }).error(function (jqxhr, status, error) {
@@ -703,6 +728,7 @@ function CN_SendMessage(text) {
             // If speech recognition is active, disable it
             if (micEnabled) {
                 clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
+
                 CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 200);
             };
         });
@@ -715,9 +741,10 @@ function CN_SendMessage(text) {
     } else {
         // If speech recognition is active, disable it
         if (micEnabled) {
+            //CN_SPEECHREC.stop();
             // No autosend, so continue recognizing
             clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
-            CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 100);
+            CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 200);
         }
     }
 }
@@ -810,9 +837,9 @@ function CN_StartSpeechRecognition() {
 
 // Make sure the speech recognition is turned on when the bot is not speaking
 function CN_KeepSpeechRecWorking() {
-    if (CN_FINISHED) return; // Conversation finished
+    //if (CN_FINISHED) return; // Conversation finished
     clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
-    CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 1000);
+    CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 3000);
     if (!CN_IS_READING && !CN_IS_LISTENING && !CN_PAUSED) {
         if (!CN_SPEECHREC)
             CN_StartSpeechRecognition();
