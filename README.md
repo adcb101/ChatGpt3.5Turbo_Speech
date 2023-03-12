@@ -37,7 +37,7 @@ ChatGpt3.5 Turbo Api 已经开放，可惜不像之前的接口无需科学上�
 <img  src="doc/updateFuntions.png"/>
 </div>
 
-### UpdateFuntions
+### ✨ UpdateFuntions
 
 1.控制扬声器按钮，默认关闭，单击切换；<br />
 2.控制麦克风按钮，默认关闭，单击切换；<br />
@@ -46,7 +46,6 @@ ChatGpt3.5 Turbo Api 已经开放，可惜不像之前的接口无需科学上�
 5.声音回放按钮；<br />
 6.开启虚化后，可单击内容框控制此条内容是否虚化。<br />
 
-<br />
 <br />
 
 #### 🎈 Tips
