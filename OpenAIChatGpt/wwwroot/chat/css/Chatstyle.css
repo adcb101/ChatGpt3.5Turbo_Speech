@@ -32,13 +32,13 @@ select {
     border-radius: 5px;
     box-shadow: 0 0 5px #ccc;
     font-size: 16px;
-    font-family: 'Microsoft YaHei UI', sans-serif;
+    /*font-family: 'Microsoft YaHei UI', sans-serif;*/
     color: #666;
 }
 
 select option {
     font-size: 16px;
-    font-family: 'Microsoft YaHei UI', sans-serif;
+    /*font-family: 'Microsoft YaHei UI', sans-serif;*/
     color: #666
 }
 
@@ -76,7 +76,7 @@ label {
     border: 2px solid #4CD964;
     width: 70%;
     height: 45%;
-    background-color: #fff;
+    background-color: rgb(242, 242, 242);
     border: 1px solid #ccc;
     border-radius: 5px;
     overflow-y: scroll;
@@ -159,6 +159,7 @@ label {
     margin-right: 1em;
     border: 2px solid #F2F2F7;
     color: #1C1C1E;
+    background-color: rgb(242, 242, 242);
     /* flex: 3; */
     padding: 5px;
     border: 1px solid #ccc;
