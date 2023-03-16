@@ -27,13 +27,14 @@ select {
     width: 250px;
     padding: 10px;
     margin-left: 15px;
-    background-color: lightcyan;
+    background-color: #fae4fe;
     border: none;
     border-radius: 5px;
     box-shadow: 0 0 5px #ccc;
     font-size: 16px;
     /*font-family: 'Microsoft YaHei UI', sans-serif;*/
     color: #666;
+    
 }
 
 select option {
@@ -76,7 +77,7 @@ label {
     border: 2px solid #4CD964;
     width: 70%;
     height: 45%;
-    background-color: rgb(242, 242, 242);
+    background-color: rgb(142, 142, 142);
     border: 1px solid #ccc;
     border-radius: 5px;
     overflow-y: scroll;
@@ -100,23 +101,26 @@ label {
     transition: filter 0.5s ease-in-out;
 }
 
-.blur-div .chat-message-content {
-    background-color: #f5f5f5;
-    border-radius: 5px;
-    display: inline-block;
-    max-width: 100%;
-    padding: 10px;
-    margin-right: 0px;
-}
+    .blur-div .chat-message-content {
+        background-color: #F5F3E0;
+        border-radius: 5px;
+        display: inline-block;
+        max-width: 100%;
+        padding: 10px;
+        margin-right: 0px;
+        display: block;
+        font-family: Gill Sans, sans-serif;
+    }
+
 
 .chat-message-role {
-    background-color: #b5cee4;
+    background-color: #FAE4FE;
     border-radius: 5px;
     display: inline-block;
     max-width: 100%;
     padding: 10px;
     margin-right: 5px;
-    height: 20%;
+    height: 19%;
 }
 
 .chat-message-actions {
@@ -159,7 +163,7 @@ label {
     margin-right: 1em;
     border: 2px solid #F2F2F7;
     color: #1C1C1E;
-    background-color: rgb(242, 242, 242);
+    background-color: #fae4fe;
     /* flex: 3; */
     padding: 5px;
     border: 1px solid #ccc;

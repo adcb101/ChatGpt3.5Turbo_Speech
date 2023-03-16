@@ -178,7 +178,7 @@ function createChatMessage(role, content) {
 
 
 
-    const messageContent = document.createElement('div');
+    const messageContent = document.createElement('pre');
     messageContent.classList.add('chat-message-content');
     messageContent.textContent = content;
     blurmessageContent.appendChild(messageContent);
@@ -200,7 +200,7 @@ function createChatMessage(role, content) {
 
 // 添加新聊天消息
 function addChatMessage(role, content) {
-    const message = createChatMessage(role, content);
+    const message = createChatMessage(role, content.trim());
     const box = message.querySelector('.blur-div');
     if (role == 'User') {
         box.setAttribute('id', role);
