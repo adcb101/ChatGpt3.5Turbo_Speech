@@ -3,44 +3,289 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - OpenAIChatGpt</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="icon" type="image/png" href="~/favicon.png">
+    <link rel="icon" type="image/svg+xml" href="~/favicon.svg">
+    <title>OpenAI ChatGpt</title>
+ 
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/OpenAIChatGpt.styles.css" asp-append-version="true" />
+    
+    
+    @*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" type="text/css" />*@
+    <link rel="apple-touch-icon" sizes="57x57" href="assets/favicon/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="assets/favicon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="assets/favicon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="assets/favicon/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="assets/favicon/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="assets/favicon/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="assets/favicon/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="assets/favicon/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/favicon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="assets/favicon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon/favicon-16x16.png">
+    <link rel="manifest" href="assets/favicon/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="assets/favicon/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+    <!-- Vendors styles-->
+    <link rel="stylesheet" href="vendors/simplebar/css/simplebar.css">
+    <link rel="stylesheet" href="css/vendors/simplebar.css">
+    <!-- Main styles for this application-->
+    <link href="css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/chat/css/Chatstyle.css?v=1.0" type="text/css" />
+    <!-- We use those styles to show code examples, you should remove them in your application.-->
+    @* <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.23.0/themes/prism.css">
+    <link href="css/examples.css" rel="stylesheet">*@
+    <!-- Global site tag (gtag.js) - Google Analytics-->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-118965717-3"></script>
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">OpenAIChatGpt</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
+<body id="body-container" class="dark-theme">
+    <div class="sidebar sidebar-dark sidebar-fixed" id="sidebar">
+        <div class="sidebar-brand d-none d-md-flex">
+            <h3 class="sidebar-brand-full">ChatGpt AI</h3>
+            @*<svg class="sidebar-brand-full" width="118" height="46" alt="CoreUI Logo">
+                <use xlink:href="assets/brand/coreui.svg#full"></use>
+            </svg>
+            <svg class="sidebar-brand-narrow" width="46" height="46" alt="CoreUI Logo">
+                <use xlink:href="assets/brand/coreui.svg#signet"></use>
+            </svg>*@
+        </div>
+
+        <nav class="nav sidebar-nav flex-column">
+
+            <div class="d-flex flex-wrap">
+                <button class="nav-link btn btn-primary btn-sm mx-1" id="audiobutton" title="Speaker On">
+                    🔇
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        
-                    </ul>
-                </div>
+                <button class="nav-link btn btn-primary btn-sm mx-1" id="mircbtn" title="Microphone On">
+                    🤫
+                </button>
+                <button class="nav-link btn btn-primary btn-sm mx-1" id="skipbtn" title="Skip">
+                    ⏩
+                </button>
+                <button id="blur-button" class="nav-link btn btn-primary btn-sm mx-1" title="Blur On">
+                    <img src="~/chat/pic/blur.png" alt="Blur" width="24" height="24" class="lzy lazyload--done">
+                </button>
+            </div>
+
+           
+            <div class="mt-2 pt-2 ">
+                <label for="aivoice" class="mx-2">AiVoice:</label>
+                <select class="" id="Languages" style="width: 100%; max-width: 200px;position:unset;cursor:pointer">
+                </select>
+
+            </div>
+            
+            <div class="mt-2 pt-2 ">
+                <select id="Voices" style="width: 100%; max-width: 200px;position:unset;cursor:pointer"></select>
+            </div>
+            <div class="mt-2 pt-2">
+                <label for="polly" class="mx-2">Polly:</label>
+                <select class="" id="PollyLanguages" style="width: 100%; max-width: 200px;position:unset;cursor:pointer">
+                    <option value="请选择">请选择</option>
+                </select>
+            </div>
+
+            
+            <div class="mt-2 pt-2">
+                <label for="uservoice" class="mx-2">UserVoice:</label>
+                <select class="" id="Spoken" style="width: 100%; max-width: 200px;position:unset;cursor:pointer">
+                </select>
+            </div>
+            <div class="mt-2 pt-2 ml-2">
+            <div style="display: flex; align-items: center;">
+                <label for="rate" style="color: #00FFFF;">Rate:</label>
+                <input style="cursor:pointer;" type="range" min="0.5" max="2" value="1" step="0.1" id="rate" />
+                <div class="rate-value" style="color: #00FFFF;">1</div>
+                <div class="clearfix"></div>
+            </div>
+            </div>
+            <div class="mt-2 pt-2  ml-2">
+            <div style="display: flex; align-items: center;">
+                <label for="pitch" style="color: #00FFFF;">Pitch:</label>
+                <input style="cursor:pointer;" type="range" min="0" max="2" value="1" step="0.13" id="pitch" />
+                <div class="pitch-value" style="color: #00FFFF;">1</div>
+                <div class="clearfix"></div>
+            </div>
             </div>
         </nav>
-    </header>
 
-    
-        @RenderBody()
-        
-    <footer class="border-top footer text-muted">
-        <div class="container" style="cursor:pointer;">
-            &copy; 2023 - OpenAIChatGpt - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    </div>
+
+    <div class="wrapper d-flex flex-column min-vh-100 bg-light dark:bg-transparent">
+        <header class="header header-sticky" style="border-block: none;">
+            <div class="container-fluid">
+                <button class="header-toggler px-md-0 me-md-3" type="button" onclick="coreui.Sidebar.getInstance(document.querySelector('#sidebar')).toggle()" >
+                    <svg class="icon icon-lg">
+                        <use xlink:href="vendors/@@coreui/icons/svg/free.svg#cil-menu"></use>
+                    </svg>
+                </button>
+                <a class="header-brand d-md-none" href="#">ChatGpt AI
+              @*  <svg width="118" height="46" alt="CoreUI Logo">
+                <use xlink:href="fa/brand/coreui.svg#full"></use>
+                </svg>*@
+                </a>
+                <div class="configMenu">
+                    <div id="headisstream"  data-coreui-toggle="modal" data-coreui-target="#configModal" class="text-center p-1 rounded-md bg-gray-300/20 dark:bg-gray-900/10 hover:bg-gray-300/50 dark:hover:bg-gray-900/50">流模式: false</div>
+                    <div id="headmodel" data-coreui-toggle="modal" data-coreui-target="#configModal" class="text-center p-1 rounded-md bg-gray-300/20 dark:bg-gray-900/10 hover:bg-gray-300/50 dark:hover:bg-gray-900/50">模型: gpt-3.5-turbo</div>
+                    <div id="headmaktoken" data-coreui-toggle="modal" data-coreui-target="#configModal" class="text-center p-1 rounded-md bg-gray-300/20 dark:bg-gray-900/10 hover:bg-gray-300/50 dark:hover:bg-gray-900/50">最大 Token: 2000</div>
+                    <div id="headtemp" data-coreui-toggle="modal" data-coreui-target="#configModal" class="text-center p-1 rounded-md bg-gray-300/20 dark:bg-gray-900/10 hover:bg-gray-300/50 dark:hover:bg-gray-900/50">采样温度: 1</div>
+                   @* <div id="headtopp" data-coreui-toggle="modal" data-coreui-target="#configModal" class="text-center p-1 rounded-md bg-gray-300/20 dark:bg-gray-900/10 hover:bg-gray-300/50 dark:hover:bg-gray-900/50">Top-p: 1</div>*@
+                    <div id ="heapre" data-coreui-toggle="modal" data-coreui-target="#configModal" class="text-center p-1 rounded-md bg-gray-300/20 dark:bg-gray-900/10 hover:bg-gray-300/50 dark:hover:bg-gray-900/50">存在惩罚: 0</div>
+                    <div id="headfre" data-coreui-toggle="modal" data-coreui-target="#configModal" class="text-center p-1 rounded-md bg-gray-300/20 dark:bg-gray-900/10 hover:bg-gray-300/50 dark:hover:bg-gray-900/50">频率惩罚: 0</div>
+                </div>
+                
+               
+
+               
+            </div>
+
+        </header>
+        <div class="body flex-grow-1 " style="background-color: #353541;">
+            @RenderBody()
         </div>
-    </footer>
+        <footer class="footer">
+           @* <div><a href="https://coreui.io">CoreUI </a><a href="https://coreui.io">Bootstrap Admin Template</a> © 2022 creativeLabs.</div>
+            <div class="ms-auto">Powered by&nbsp;<a href="https://coreui.io/docs/">CoreUI UI Components</a></div>*@
+        </footer>
+    </div>
+    <div class="modal fade " id="configModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                
+                    <h5 class="modal-title" id="exampleModalLabel">配置</h5>
+                    <button type="button" class="btn-close" data-coreui-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="p-6 ">
+                       
+                       
+                        <div class="mt-3 pt-3 ">
+                            
+                                <label for="Model" >Model:</label>
+                                <select class="" id="Model" style="width: 100%; max-width: 200px;position:unset;cursor:pointer">
+                                    <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
+                                </select>
+                            
+                           
+                        </div>
+                     
+                        <div class="mt-3 pt-3 ">
+                            <div style="display: flex; align-items: center;">
+                                <label for="max_tokens">最大Token:</label>
+                                <div class="max_tokens-value" style="margin-left:5px">2000</div>
+                                <input  style="cursor:pointer; margin-left:5px" type="range" min="0" max="4096" step="1" id="max_tokens" />
 
-    <script src="~/lib/jquery/dist/jquery-3.6.0.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+                            </div>
+                             <div class="min-w-fit text-gray-500 dark:text-gray-300 text-sm mt-2">
+                                助手生成一条信息可以包含的最大 token 数。最大
+                                token 数也受到模型的总长度限制，上文的 token 数和生成的 token 数之和不能超过模型的 token 总数（例如 gpt-3.5-turbo 的 token 总数是 4096）。
+                            </div>
+                        </div>
+                        <div class="mt-3 pt-3 ">
+                            
+                          
+                          
+                                <div style="display: flex; align-items: normal;">
+                                    <label for="stream">流模式:</label>
+                                    <div class="stream-value" style="margin-left:5px">false</div>
+                                <div class="form-check form-switch" style="margin-left:5px">
+                                    <input class="form-check-input"  type="checkbox" role="switch" id="stream" checked>
+                                  </div>
+                                </div>
+                               
+                              
+                          
+                            <div class="min-w-fit text-gray-500 dark:text-gray-300 text-sm mt-2">
+                                采用流模式，GPT可以实时输出，类似打字机效果，回复精度可能会有下降。
+                            </div>
+                        </div>
+                        <div class="mt-3 pt-3 ">
+                            <div style="display: flex; align-items: center;">
+                                <label for="temperature">采样温度:</label>
+                                <div class="temperature-value" style="margin-left:5px">1</div>
+                                <input style="cursor:pointer; margin-left:5px" type="range" min="0" max="2" step="0.1" id="temperature" />
+
+                            </div>
+
+                              <div class="min-w-fit text-gray-500 dark:text-gray-300 text-sm mt-2">
+                                使用何种采样温度，值在 0 到 2 之间。较高的数值如 0.8
+                                会使输出更加随机，而较低的数值如 0.2 会使输出更加集中和确定。我们通常建议修改此参数或 Top-p，但不要同时修改两者。(默认: 1)
+                            </div>
+                        </div>
+                       @* <div class="mt-3 pt-3 ">
+
+                            <div style="display: flex; align-items: center;">
+                                <label for="Top-p">Top-p:</label>
+                                <div class="Top-p-value" style="margin-left:5px">1</div>
+                                <input style="cursor:pointer; margin-left:5px" type="range" min="0" max="1" step="0.1" id="Top-p" />
+
+                            </div>
+                              <div class="min-w-fit text-gray-500 dark:text-gray-300 text-sm mt-2">
+                                数值在 0 到 1 之间。采用核采样（nucleus
+                                sampling）的一种采样温度的替代方法，模型仅考虑前 Top-p 概率质量的 token。因此，0.1 表示仅考虑前 10% 概率质量的
+                                token。我们通常建议修改此参数或采样温度，但不要同时修改两者。(默认: 1)
+                            </div>
+                        </div>*@
+                        <div class="mt-3 pt-3 ">
+                            <div style="display: flex; align-items: center;">
+                                <label for="presence_penalty">存在惩罚:</label>
+                                <div class="presence_penalty-value" style="margin-left:5px">0</div>
+                                <input style="cursor:pointer; margin-left:5px" type="range" min="-2" max="2" step="0.1" id="presence_penalty" />
+
+                            </div>
+                                                                                                                          
+                            <div class="min-w-fit text-gray-500 dark:text-gray-300 text-sm mt-2">
+                                数值在 -2.0 到 2.0 之间。正值会根据新 token
+                                是否已经出现在文本中来惩罚它们，增加模型谈论新话题的可能性。 (默认: 0)
+                            </div>
+                        </div>
+                        <div class="mt-3 pt-3 ">
+                            <div style="display: flex; align-items: center;">
+                                <label for="frequency_penalty">频率惩罚:</label>
+                                <div class="frequency_penalty-value" style="margin-left:5px">0</div>
+                                <input style="cursor:pointer; margin-left:5px" type="range" min="-2" max="2" step="0.1" id="frequency_penalty" />
+
+                            </div>
+                                                                                                                          
+                            <div class="min-w-fit text-gray-500 dark:text-gray-300 text-sm mt-2">
+                                数值在 -2.0 到 2.0 之间。正值会根据新 token
+                                在文本中的现有频率来惩罚它们，降低模型直接重复相同语句的可能性。(默认: 0)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    
+                    
+                    <button type="button" class="btn btn-secondary" data-coreui-dismiss="modal">取消</button>
+                    <button type="button" id="modalconfim"
+                            class="btn btn-primary" data-coreui-dismiss="modal">
+                        确认
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+       
+        //stream
+        //temperature
+    </script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/lib/jquery/dist/jquery-3.6.0.min.js"></script>
+    <script type="text/javascript" src="~/chat/js/Chatscript.js?version=1.1.6"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>  
+    <!-- CoreUI and necessary plugins-->
+    <script src="vendors/@@coreui/coreui/js/coreui.bundle.min.js"></script>
+    <script src="vendors/simplebar/js/simplebar.min.js"></script>
+    <!-- Plugins and scripts required by this view-->
+    @*<script src="vendors/chart.js/js/chart.min.js"></script>
+    <script src="vendors/@@coreui/chartjs/js/coreui-chartjs.js"></script>*@
+    <script src="vendors/@@coreui/utils/js/coreui-utils.js"></script>
+    @*<script src="js/main.js"></script>*@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

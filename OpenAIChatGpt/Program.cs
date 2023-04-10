@@ -1,4 +1,9 @@
+using Amazon;
+using Amazon.Polly;
+using Amazon.Runtime;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
+using NLog.Web;
 using OpenAI.GPT3.Extensions;
 using OpenAIChatGpt.Services;
 using Serilog;
@@ -10,23 +15,23 @@ namespace OpenAIChatGpt
     {
         public static void Main(string[] args)
         {
+            var logger = NLogBuilder.ConfigureNLog("NLog.config").GetCurrentClassLogger();
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddControllersWithViews();
-            builder.Services.AddOpenAIService(options =>
-            {   
-                //options.ProviderType = ProviderType.Azure;
-                options.ApiKey = builder.Configuration.GetSection("OpenAiKeyOption:key").Get<string>();
-                //options.DeploymentId = "MyDeploymentId";
-                //options.ResourceName = "MyResourceName";
-            });
+            //builder.Services.AddOpenAIService(options =>
+            //{   
+            //    //options.ProviderType = ProviderType.Azure;
+            //    options.ApiKey = builder.Configuration.GetSection("OpenAiKeyOption:key").Get<string>();
+            //    //options.DeploymentId = "MyDeploymentId";
+            //    //options.ResourceName = "MyResourceName";
+            //});
+           builder.Services.AddSingleton<IAmazonPollyservice>(new AmazonPollyservice(new AmazonPollyClient(new BasicAWSCredentials("AKIAQ3LXPO572L6MG4WZ", "Si3XTJT5wkd/cSYPGuO9uZsgy5m1ggZO2NZlczxm"), RegionEndpoint.APSoutheast2)));
+
+          
+            builder.Host.UseNLog(new NLogAspNetCoreOptions { CaptureMessageTemplates = true, CaptureMessageProperties = true });
             
-            builder.Host.UseSerilog((context, logger) =>
-            {
-                logger.ReadFrom.Configuration(context.Configuration);
-                logger.Enrich.FromLogContext();
-                logger.WriteTo.File("logs\\myapp.txt", rollingInterval: RollingInterval.Day);
-            });
-            builder.Services.AddScoped<IChatGptSevice, ChatGptSevice>();
+            //builder.Services.AddScoped<IChatGptSevice, ChatGptSevice>();
+            builder.Services.AddScoped<GptHttpClient>();
             builder.Services.AddMemoryCache();
            
             var app = builder.Build();
@@ -48,5 +53,7 @@ namespace OpenAIChatGpt
 
             app.Run();
         }
-    }
+
+        
+}
 }

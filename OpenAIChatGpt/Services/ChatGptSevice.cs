@@ -5,6 +5,7 @@ using OpenAI.GPT3.ObjectModels.RequestModels;
 
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using static OpenAI.GPT3.ObjectModels.SharedModels.IOpenAiModels;
 
 namespace OpenAIChatGpt.Services
@@ -12,11 +13,14 @@ namespace OpenAIChatGpt.Services
     public class ChatGptSevice : IChatGptSevice
     {
         private readonly IServiceProvider _serviceProvider;
-        
-        public ChatGptSevice(IServiceProvider serviceProvider)
+        private readonly ILogger<ChatGptSevice> _logger;
+
+       
+
+        public ChatGptSevice(IServiceProvider serviceProvider, ILogger<ChatGptSevice> logger)
         {
             _serviceProvider = serviceProvider;
-            
+            _logger = logger;
         }
         public async Task<ChatMessage> ChatAsync(string role, string content, string key)
         {
@@ -40,7 +44,9 @@ namespace OpenAIChatGpt.Services
                     chatMessages = externalList;
 
                 }
-
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+                
                 var completionResult = await openAiService.ChatCompletion.CreateCompletion(new ChatCompletionCreateRequest
                 {
                     Messages = chatMessages,
@@ -48,6 +54,10 @@ namespace OpenAIChatGpt.Services
                     Model = OpenAI.GPT3.ObjectModels.Models.ChatGpt3_5Turbo,
                     MaxTokens = 1000//optional
                 });
+                sw.Stop();
+                
+                _logger.LogInformation($"程序耗时：{sw.Elapsed.TotalSeconds}s.");
+                //Console.WriteLine($"程序耗时：{sw.ElapsedMilliseconds}ms.");
                 if (completionResult.Successful)
                 {
                     int x = chatMessages.Count;
