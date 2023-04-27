@@ -254,6 +254,7 @@ select option {
         /* background-image: url("speaker.png"); */
         background-repeat: no-repeat;
         background-size: contain;
+        z-index: 3;
     }
     .chat-message-actions.play-audio {
         display: none;

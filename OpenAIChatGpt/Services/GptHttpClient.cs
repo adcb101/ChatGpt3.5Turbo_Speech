@@ -22,7 +22,7 @@ namespace OpenAIChatGpt.Services
             _httpClient = new HttpClient();
             _httpClient.BaseAddress = new Uri("https://api.openai.com/v1/");
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "");
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "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");
         }
 
         public async Task<string> GetCompletion(RequestData requestData)
@@ -30,7 +30,7 @@ namespace OpenAIChatGpt.Services
            
             var responseMessage = await _httpClient.PostAsJsonAsync("chat/completions", requestData);
             var response = await responseMessage.Content.ReadFromJsonAsync<ChatCompletion>();
-            //_logger.LogInformation($"""{response.choices[0].message.Content}""");
+            //_logger.LogInformation(response.choices[0]);
             return response.choices[0].message.Content;
         }
         public async Task<HttpResponseMessage> GetCompletionStream(RequestData requestData)
@@ -108,7 +108,8 @@ namespace OpenAIChatGpt.Services
     {
         public List<Requestmessage> messages { get; set; } = new List<Requestmessage>();
         public string model { get; set; } = "gpt-3.5-turbo";
-        public int max_tokens { get; set; } = 1000;
+
+        // public int max_tokens { get; set; } = null;
         public double temperature { get; set; } = 1;
         public double presence_penalty { get; set; } = 0;
         public double top_p { get; set; } = 1;
@@ -116,6 +117,7 @@ namespace OpenAIChatGpt.Services
         public bool stream { get; set; } = false;
 
     }
+    
     public class Usage
     {
         public int Prompt_tokens { get; set; }

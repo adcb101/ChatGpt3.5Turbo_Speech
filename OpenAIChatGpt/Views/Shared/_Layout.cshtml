@@ -127,9 +127,9 @@
                 </svg>*@
                 </a>
                 <div class="configMenu">
-                    <div id="headisstream"  data-coreui-toggle="modal" data-coreui-target="#configModal" class="text-center p-1 rounded-md bg-gray-300/20 dark:bg-gray-900/10 hover:bg-gray-300/50 dark:hover:bg-gray-900/50">流模式: false</div>
+                    <div id="headisstream"  data-coreui-toggle="modal" data-coreui-target="#configModal" class="text-center p-1 rounded-md bg-gray-300/20 dark:bg-gray-900/10 hover:bg-gray-300/50 dark:hover:bg-gray-900/50">流模式: true</div>
                     <div id="headmodel" data-coreui-toggle="modal" data-coreui-target="#configModal" class="text-center p-1 rounded-md bg-gray-300/20 dark:bg-gray-900/10 hover:bg-gray-300/50 dark:hover:bg-gray-900/50">模型: gpt-3.5-turbo</div>
-                    <div id="headmaktoken" data-coreui-toggle="modal" data-coreui-target="#configModal" class="text-center p-1 rounded-md bg-gray-300/20 dark:bg-gray-900/10 hover:bg-gray-300/50 dark:hover:bg-gray-900/50">最大 Token: 2000</div>
+                    @* <div id="headmaktoken" data-coreui-toggle="modal" data-coreui-target="#configModal" class="text-center p-1 rounded-md bg-gray-300/20 dark:bg-gray-900/10 hover:bg-gray-300/50 dark:hover:bg-gray-900/50">最大 Token: 2000</div> *@
                     <div id="headtemp" data-coreui-toggle="modal" data-coreui-target="#configModal" class="text-center p-1 rounded-md bg-gray-300/20 dark:bg-gray-900/10 hover:bg-gray-300/50 dark:hover:bg-gray-900/50">采样温度: 1</div>
                    @* <div id="headtopp" data-coreui-toggle="modal" data-coreui-target="#configModal" class="text-center p-1 rounded-md bg-gray-300/20 dark:bg-gray-900/10 hover:bg-gray-300/50 dark:hover:bg-gray-900/50">Top-p: 1</div>*@
                     <div id ="heapre" data-coreui-toggle="modal" data-coreui-target="#configModal" class="text-center p-1 rounded-md bg-gray-300/20 dark:bg-gray-900/10 hover:bg-gray-300/50 dark:hover:bg-gray-900/50">存在惩罚: 0</div>
@@ -172,7 +172,7 @@
                            
                         </div>
                      
-                        <div class="mt-3 pt-3 ">
+                        @* <div class="mt-3 pt-3 ">
                             <div style="display: flex; align-items: center;">
                                 <label for="max_tokens">最大Token:</label>
                                 <div class="max_tokens-value" style="margin-left:5px">2000</div>
@@ -183,14 +183,14 @@
                                 助手生成一条信息可以包含的最大 token 数。最大
                                 token 数也受到模型的总长度限制，上文的 token 数和生成的 token 数之和不能超过模型的 token 总数（例如 gpt-3.5-turbo 的 token 总数是 4096）。
                             </div>
-                        </div>
+                        </div> *@
                         <div class="mt-3 pt-3 ">
                             
                           
                           
                                 <div style="display: flex; align-items: normal;">
                                     <label for="stream">流模式:</label>
-                                    <div class="stream-value" style="margin-left:5px">false</div>
+                                    <div class="stream-value" style="margin-left:5px">true</div>
                                 <div class="form-check form-switch" style="margin-left:5px">
                                     <input class="form-check-input"  type="checkbox" role="switch" id="stream" checked>
                                   </div>

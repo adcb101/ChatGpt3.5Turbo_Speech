@@ -152,12 +152,13 @@ namespace OpenAIChatGpt.Controllers
                 while (!sseReader.EndOfStream)
                 {
                     var line = await sseReader.ReadLineAsync();
-
+                    _logger.LogInformation(line);
                     if (string.IsNullOrEmpty(line))
                         continue;
                     if (line.Contains("assistant"))
                         continue;
                     line = line.RemoveIfStartWith("data: ");
+
                     // Exit the loop if the stream is done
                     if (line.StartsWith("[DONE]"))
                     {
@@ -185,7 +186,7 @@ namespace OpenAIChatGpt.Controllers
                     if (null != block)
                     {
                         // yield return block;
-                       // _logger.LogInformation($"""{block.choices[0].delta.content}""");
+                        _logger.LogInformation(block.choices[0].delta.content);
                         await writer.WriteLineAsync(block.choices[0].delta.content);
                         await writer.FlushAsync();
                     }

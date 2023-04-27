@@ -124,7 +124,7 @@ function observeEditor(editor) {
 }
 observeEditor(bodyMain);
 
-const maxtoken = document.querySelector("#max_tokens");
+//const maxtoken = document.querySelector("#max_tokens");
 //const top_p = document.querySelector("#Top-p");
 const temperature = document.querySelector("#temperature");
 const presence_penalty = document.querySelector("#presence_penalty");
@@ -133,7 +133,7 @@ const frequency_penalty = document.querySelector("#frequency_penalty");
 
 const headisstream = document.querySelector("#headisstream")
 const headmodel = document.querySelector("#headmodel")
-const headmaktoken = document.querySelector("#headmaktoken")
+//const headmaktoken = document.querySelector("#headmaktoken")
 const headtemp = document.querySelector("#headtemp")
 //const headtopp = document.querySelector("#headtopp")
 const heapre = document.querySelector("#heapre")
@@ -143,7 +143,7 @@ modalconfim.addEventListener('click', () => {
 
     headisstream.innerHTML = "流模式: " + isstream.checked;
     headmodel.innerHTML = "模型: " + model.value;
-    headmaktoken.innerHTML = "最大Token: " + maxtoken.value;
+    //headmaktoken.innerHTML = "最大Token: " + maxtoken.value;
     headtemp.innerHTML = "采样温度: " + temperature.value;
   
     //headtopp.innerHTML = "Top-p: " + top_p.value;
@@ -154,10 +154,10 @@ modalconfim.addEventListener('click', () => {
 $('#configModal').on('shown.coreui.modal', function () {
     // 模态框已经展示出来，可以在这里执行您的操作
     console.log('模态框已打开');
-    const maxtokenvalue = document.querySelector(".max_tokens-value");
-    maxtoken.onchange = function () {
-        maxtokenvalue.textContent = maxtoken.value;
-    };
+    //const maxtokenvalue = document.querySelector(".max_tokens-value");
+    // maxtoken.onchange = function () {
+    //     maxtokenvalue.textContent = maxtoken.value;
+    // };
     const temperaturevalue = document.querySelector(".temperature-value");
 
     temperature.onchange = function () {
@@ -282,12 +282,21 @@ function parseEventSource(data) {
     //console.log("%o",data);
     var result='';
     //linux server
+    // if (data.includes('\n\n')) {
+    //     //result=data;
+         
+    //     result=data.replace(/\n\n/g, "\n")
+    // }else{
+    //     result=data.replace(/\n/g, "")
+    // }
     if (data.includes('\n\n')) {
-        //result=data;
-        result=data.replace(/\n\n/g, "\n")
-    }else{
-        result=data.replace(/\n/g, "")
-    }
+        // result=data;
+         result=data.replace(/\n/g,"");
+         result=result+"\n";
+     }else{
+         result=data.replace(/\n/g, "");
+     }
+     
     //windows server
     // if (data.includes('\n\n')) {
     //     result=data;
