@@ -53,7 +53,7 @@ body {
     width: 15px;
     height: 3px;
     background-color: #000;
-    animation: blink 2s infinite;
+    animation: blink 0.5s infinite;
     display: none;
 }
 

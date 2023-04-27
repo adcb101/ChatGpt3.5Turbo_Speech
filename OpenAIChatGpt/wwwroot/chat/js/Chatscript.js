@@ -26,10 +26,11 @@ var CN_SPEECH_REC_SUPPORTED = false;
 const key = Math.random().toString();
 var isAllBlur = false;
 const isstream = document.querySelector("#stream");
+
 (function () {
     document.getElementById('send-button').style.height = document.getElementById('myTextarea').offsetHeight + "px";
     console.log(key);
-    isstream.checked = false;
+    isstream.checked=true;
     if ('webkitSpeechRecognition' in window) {
         console.log("Speech recognition API supported");
         CN_SPEECH_REC_SUPPORTED = true;
@@ -183,7 +184,7 @@ $('#configModal').on('shown.coreui.modal', function () {
     const streamvalue = document.querySelector(".stream-value");
     //const stream = document.querySelector("#stream");
     
-    stream.onchange = function () {
+    isstream.onchange = function () {
     streamvalue.textContent = isstream.checked;
     };
 })
@@ -320,7 +321,6 @@ async function getChatCompletionStream(apiKey, endPoint, messages) {
         body: JSON.stringify({
             messages: messages,
             model: model.value,
-            max_tokens: parseInt(maxtoken.value) ,
             temperature: parseFloat(temperature.value) ,
             presence_penalty: parseFloat(presence_penalty.value) ,
             top_p: 1 ,
@@ -331,7 +331,9 @@ async function getChatCompletionStream(apiKey, endPoint, messages) {
     });
 
     if (!response.ok) {
+        console.log(await response.text());
         throw new Error(await response.text());
+        
     }
 
     return response.body;
@@ -480,9 +482,6 @@ async function sendMessage() {
         } else {
            //const content=  await getChatCompletionStream("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", "Home/ProxyToC", chatMessages);
             chatnormal();
-           
-
-
         }
         //messageInput.value = '';
     }
@@ -520,7 +519,6 @@ function initPollySelect(){
          {
              messages: chatMessages,
              model: model.value,
-             max_tokens: parseInt(maxtoken.value),
              temperature: parseFloat(temperature.value),
              presence_penalty: parseFloat(presence_penalty.value),
              top_p: 1,

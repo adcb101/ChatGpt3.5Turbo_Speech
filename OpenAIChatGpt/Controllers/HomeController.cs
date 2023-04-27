@@ -186,7 +186,7 @@ namespace OpenAIChatGpt.Controllers
                     if (null != block)
                     {
                         // yield return block;
-                        _logger.LogInformation(block.choices[0].delta.content);
+                       // _logger.LogInformation(block.choices[0].delta.content);
                         await writer.WriteLineAsync(block.choices[0].delta.content);
                         await writer.FlushAsync();
                     }

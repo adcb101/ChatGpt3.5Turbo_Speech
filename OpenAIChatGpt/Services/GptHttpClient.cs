@@ -22,7 +22,7 @@ namespace OpenAIChatGpt.Services
             _httpClient = new HttpClient();
             _httpClient.BaseAddress = new Uri("https://api.openai.com/v1/");
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "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");
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "");
         }
 
         public async Task<string> GetCompletion(RequestData requestData)
