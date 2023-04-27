@@ -185,11 +185,10 @@ namespace OpenAIChatGpt.Controllers
                     if (null != block)
                     {
                         // yield return block;
+                       // _logger.LogInformation($"""{block.choices[0].delta.content}""");
                         await writer.WriteLineAsync(block.choices[0].delta.content);
                         await writer.FlushAsync();
                     }
-
-
 
                 }
 
@@ -244,7 +243,7 @@ namespace OpenAIChatGpt.Controllers
                     var items = JsonSerializer.Deserialize<List<RequestData>>(json);
                     var result = await _httpClient.GetCompletion(items[0]);
                     // Do something with the items...
-
+        
                     return Json(result);
 
                 }

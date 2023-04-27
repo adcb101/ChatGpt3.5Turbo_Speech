@@ -279,17 +279,21 @@ let outPutContent = "";
 
 function parseEventSource(data) {
     //console.log(data)
-    //console.log(data);
-    const result = data
-        .split('\n\n')
-        .filter(Boolean)
-        .map((chunk) => {
-            const jsonString = chunk
-                .split('\r\n')
-                .join('');
-            return jsonString;
-        });
-    //console.log(result)
+    //console.log("%o",data);
+    var result='';
+    //linux server
+    if (data.includes('\n\n')) {
+        //result=data;
+        result=data.replace(/\n\n/g, "\n")
+    }else{
+        result=data.replace(/\n/g, "")
+    }
+    //windows server
+    // if (data.includes('\n\n')) {
+    //     result=data;
+    // }else{
+    //     result=data.replace(/\n\n/g, "")
+    // }
     return result;
     
 
@@ -345,7 +349,7 @@ async function sendMessage() {
         console.log(chatMessages);
 
 
-
+       //isstream.checked=true;
         if (isstream.checked) {
             try {
                 //const apiEndpoint = "https://api.openai.com/v1/chat/completions";
@@ -534,7 +538,7 @@ function initPollySelect(){
             return response.json();
         })
         .then(result => {
-            console.log(result);
+            console.log("%o",result);
             const chatmessage = {
                 role: "assistant",
                 content: result,

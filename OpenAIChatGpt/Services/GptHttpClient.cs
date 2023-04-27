@@ -22,7 +22,7 @@ namespace OpenAIChatGpt.Services
             _httpClient = new HttpClient();
             _httpClient.BaseAddress = new Uri("https://api.openai.com/v1/");
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "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");
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "");
         }
 
         public async Task<string> GetCompletion(RequestData requestData)
@@ -30,7 +30,7 @@ namespace OpenAIChatGpt.Services
            
             var responseMessage = await _httpClient.PostAsJsonAsync("chat/completions", requestData);
             var response = await responseMessage.Content.ReadFromJsonAsync<ChatCompletion>();
-           
+            //_logger.LogInformation($"""{response.choices[0].message.Content}""");
             return response.choices[0].message.Content;
         }
         public async Task<HttpResponseMessage> GetCompletionStream(RequestData requestData)
