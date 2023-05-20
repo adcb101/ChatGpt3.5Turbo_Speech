@@ -25,13 +25,13 @@ namespace OpenAIChatGpt
             //    //options.DeploymentId = "MyDeploymentId";
             //    //options.ResourceName = "MyResourceName";
             //});
-           builder.Services.AddSingleton<IAmazonPollyservice>(new AmazonPollyservice(new AmazonPollyClient(new BasicAWSCredentials("AKIAQ3LXPO572L6MG4WZ", "Si3XTJT5wkd/cSYPGuO9uZsgy5m1ggZO2NZlczxm"), RegionEndpoint.APSoutheast2)));
+           builder.Services.AddSingleton<IAmazonPollyservice , AmazonPollyservice>(sp=> new AmazonPollyservice(new AmazonPollyClient(new BasicAWSCredentials("", ""), RegionEndpoint.APSoutheast2)));
 
           
             builder.Host.UseNLog(new NLogAspNetCoreOptions { CaptureMessageTemplates = true, CaptureMessageProperties = true });
             
             //builder.Services.AddScoped<IChatGptSevice, ChatGptSevice>();
-            builder.Services.AddScoped<GptHttpClient>();
+            builder.Services.AddScoped<IGptHttpClient,GptHttpClient>();
             builder.Services.AddMemoryCache();
            
             var app = builder.Build();
@@ -39,7 +39,7 @@ namespace OpenAIChatGpt
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/ChatGpt/Error");
             }
             app.UseStaticFiles();
 
@@ -49,7 +49,7 @@ namespace OpenAIChatGpt
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=ChatGpt}/{action=Index}/{id?}");
 
             app.Run();
         }

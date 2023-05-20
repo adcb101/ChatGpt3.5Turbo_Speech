@@ -1,22 +1,31 @@
-﻿using Amazon.Polly;
+﻿using Amazon;
+using Amazon.Polly;
+using Amazon.Polly.Model;
+using Amazon.Runtime;
+using Amazon.Runtime.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using OpenAI.GPT3.Extensions;
 using OpenAIChatGpt.Models;
 using OpenAIChatGpt.Services;
 using System.Diagnostics;
+using System.Linq;
+using System.Net.Http.Headers;
 using System.Text.Json;
+
 
 namespace OpenAIChatGpt.Controllers
 {
-    public class HomeController : Controller
+    public class ChatGptController : Controller
     {
         //private readonly ILogger<HomeController> _logger;
         //private readonly IChatGptSevice _chatGptSevice;
-        private readonly GptHttpClient _httpClient;
+        private readonly IGptHttpClient _httpClient;
         private readonly IAmazonPollyservice _amazonPollyservice;
-        private readonly ILogger<HomeController> _logger;//日志
-        public HomeController(ILogger<HomeController> logger, IMemoryCache memoryCache, GptHttpClient httpClient, IAmazonPollyservice amazonPollyservice)
+        private readonly ILogger<ChatGptController> _logger;//日志
+        public ChatGptController(ILogger<ChatGptController> logger, IMemoryCache memoryCache, IGptHttpClient httpClient, IAmazonPollyservice amazonPollyservice)
         {
             //_chatGptSevice = chatGptSevice;
             _logger = logger;
@@ -31,116 +40,30 @@ namespace OpenAIChatGpt.Controllers
 
 
 
-        //[HttpPost]
-        //public async Task    ChatStream([FromBody] RequestData requestData)
-        //{
-
-        //    var chatMessagesStream = await _httpClient.GetCompletionStream(requestData);
-        //    //StreamContent streamContent = new StreamContent(chatMessagesStream);
-
-        //    //// 设置 Content-Type 响应头
-        //    //streamContent.Headers.ContentType = new MediaTypeHeaderValue("text/event-stream");
-
-        //    //// 创建一个 HttpResponseMessage 对象，并将 StreamContent 对象设置为其 Content 属性
-        //    //HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
-        //    //response.Content = streamContent;
-
-        //    //return response;
-
-        //    //const string separator = "\n\n";
-
-        //    // start event stream
-        //   // HttpContext.Response.ContentType = "text/event-stream";
-        //    //HttpContext.Response.Headers.Add("Cache-Control", "no-cache");
-        //    //HttpContext.Response.Headers.Add("X-Accel-Buffering", "no");
-
-        //    // get the existing stream object that you want to return
-        //    //var existingStream = chatMessagesStream;
-
-        //    // set the response headers correctly
-        //    HttpContext.Response.ContentType = "text/event-stream";
-        //    HttpContext.Response.Headers.Add("Cache-Control", "no-cache");
-        //    HttpContext.Response.Headers.Add("X-Accel-Buffering", "no");
-
-        //    //// return the stream object
-        //    //return new StringContent(chatMessagesStream, "text/event-stream");
-
-        //    //StreamContent streamContent = new StreamContent(chatMessagesStream);
-
-        //    HttpContext.Response.Body = chatMessagesStream;
-
-
-        //}
-
-        //[HttpPost]
-        //public async Task<HttpResponseMessage> ChatStream([FromBody] RequestData requestData)
-        //{
-        //    // 创建一个 HttpResponseMessage 对象
-        //    HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
-
-        //    // 将 Content-Type 响应头设置为 text/event-stream
-        //    response.Content.Headers.ContentType = new MediaTypeHeaderValue("text/event-stream");
-        //    // 使用 PushStreamContent 类型的对象将响应内容写入输出流
-        //    response.Content = new PushStreamContent(async (outputStream, httpContext, transportContext) =>
-        //        {
-        //        try
-        //            {
-
-        //               var  reslt =_httpClient.GetCompletionStream(requestData);
-
-
-        //            //// 在这里编写发送数据的逻辑
-        //            //for (int i = 0; i < 10; i++)
-        //            //{
-        //            //    // 编写发送的数据
-        //            //    byte[] buffer = Encoding.UTF8.GetBytes($"data: Event {i}\n\n");
-
-        //            //    // 写入响应输出流
-        //            //    outputStream.Write(buffer, 0, buffer.Length);
-        //            //    outputStream.Flush();
-
-        //            //    // 模拟发送数据的间隔，单位毫秒
-        //            //    Thread.Sleep(1000);
-        //            //}
-
-        //            await foreach (var item in reslt)
-        //            {
-        //                // 编写发送的数据
-        //                byte[] buffer = Encoding.UTF8.GetBytes($"{item}\n\n");
-
-        //                // 写入响应输出流
-        //                outputStream.Write(buffer, 0, buffer.Length);
-        //                outputStream.Flush();
-        //            }
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            // 发生异常时，在 Console 中输出错误消息
-        //            Console.WriteLine(ex.Message);
-        //        }
-        //        finally
-        //        {
-        //            // 关闭输出流
-        //            outputStream.Close();
-        //        }
-        //    });
-
-        //    return response;
-        //}
-
+       
 
 
         [HttpPost]
         public async Task<IActionResult> ProxyToC([FromBody] RequestData requestData)
-        {
+        {    _logger.LogInformation(string.Join("////", requestData.messages.Select(p => $"{p.role}:{p.content.Replace("\r", "").Replace("\n", "")}")));
+            
             if (requestData == null)
             {
                 _logger.LogInformation("参数没有过来");
                 return Ok("empty");
             }
-
+            // 获取请求头
+            var headers = Request.Headers;
+            string accessToken = "";
+            // 检查是否包含Authorization头
+            if (headers.TryGetValue("Authorization", out StringValues authHeaderValue))
+            {
+                // 获取Bearer令牌的值
+                 accessToken = authHeaderValue.FirstOrDefault();
+            }
+           
             // 发送向 B 的内容并等待响应
-            using (var bResponse = await _httpClient.GetCompletionStream(requestData))
+            using (var bResponse = await _httpClient.GetCompletionStream(requestData, accessToken))
             // 将响应数据作为异步流发送到客户端
             using (var bStream = await bResponse.Content.ReadAsStreamAsync())
             {
@@ -152,7 +75,7 @@ namespace OpenAIChatGpt.Controllers
                 while (!sseReader.EndOfStream)
                 {
                     var line = await sseReader.ReadLineAsync();
-                    _logger.LogInformation(line);
+                    //_logger.LogInformation(line);
                     if (string.IsNullOrEmpty(line))
                         continue;
                     if (line.Contains("assistant"))
@@ -186,7 +109,7 @@ namespace OpenAIChatGpt.Controllers
                     if (null != block)
                     {
                         // yield return block;
-                       // _logger.LogInformation(block.choices[0].delta.content);
+                        //_logger.LogInformation(block.choices[0].delta.content);
                         await writer.WriteLineAsync(block.choices[0].delta.content);
                         await writer.FlushAsync();
                     }
@@ -222,6 +145,9 @@ namespace OpenAIChatGpt.Controllers
             //VoiceId = "";
             _logger.LogInformation(content);
             Stopwatch sw1 = new Stopwatch();
+            //AmazonPollyClient amazonPollyClient = new AmazonPollyClient(new BasicAWSCredentials("AKIAQ3LXPO572L6MG4WZ", "Si3XTJT5wkd/cSYPGuO9uZsgy5m1ggZO2NZlczxm"), RegionEndpoint.APSoutheast2);
+            //new AmazonPollyservice(new AmazonPollyClient(new BasicAWSCredentials("AKIAQ3LXPO572L6MG4WZ", "Si3XTJT5wkd/cSYPGuO9uZsgy5m1ggZO2NZlczxm"), RegionEndpoint.APSoutheast2))
+
             sw1.Start();
             var audioBytes = await _amazonPollyservice.Speak(ssmlMarks, voiceId, languageCode);
             sw1.Stop();
@@ -238,13 +164,32 @@ namespace OpenAIChatGpt.Controllers
         {
             try
             {
+                // 获取请求头
+                var headers = Request.Headers;
+                string accessToken = "";
+                // 检查是否包含Authorization头
+                if (headers.TryGetValue("Authorization", out StringValues authHeaderValue))
+                {
+                    // 获取Bearer令牌的值
+                     accessToken = authHeaderValue.FirstOrDefault();
+                }
                 using (var reader = new StreamReader(Request.Body))
                 {
                     var json = await reader.ReadToEndAsync();
                     var items = JsonSerializer.Deserialize<List<RequestData>>(json);
-                    var result = await _httpClient.GetCompletion(items[0]);
+                   // _logger.LogInformation(string.Join("///", items[0].messages));
+                    _logger.LogInformation(string.Join("////", items[0].messages.Select(p => $"{p.role}:{p.content.Replace("\r", "").Replace("\n", "")}")));
+                    Stopwatch sw1 = new Stopwatch();
+                    //AmazonPollyClient amazonPollyClient = new AmazonPollyClient(new BasicAWSCredentials("AKIAQ3LXPO572L6MG4WZ", "Si3XTJT5wkd/cSYPGuO9uZsgy5m1ggZO2NZlczxm"), RegionEndpoint.APSoutheast2);
+                    //new AmazonPollyservice(new AmazonPollyClient(new BasicAWSCredentials("AKIAQ3LXPO572L6MG4WZ", "Si3XTJT5wkd/cSYPGuO9uZsgy5m1ggZO2NZlczxm"), RegionEndpoint.APSoutheast2))
+
+                    sw1.Start();
+                    var result = await _httpClient.GetCompletion(items[0], accessToken);
+                    sw1.Stop();
+                    _logger.LogInformation($"assisant voice耗时：{sw1.Elapsed.Seconds}s,个数{result.Length}个,平均{result.Length/sw1.Elapsed.Seconds}个");
+                   
                     // Do something with the items...
-        
+                    // _logger.LogInformation);
                     return Json(result);
 
                 }
@@ -259,6 +204,7 @@ namespace OpenAIChatGpt.Controllers
         }
         public async Task<IActionResult> GetPollyVoice()
         {
+            //AmazonPollyClient amazonPollyClient = new AmazonPollyClient(new BasicAWSCredentials("AKIAQ3LXPO572L6MG4WZ", "Si3XTJT5wkd/cSYPGuO9uZsgy5m1ggZO2NZlczxm"), RegionEndpoint.APSoutheast2);
 
             var dict = await _amazonPollyservice.GetVoices();
             return Json(dict);
