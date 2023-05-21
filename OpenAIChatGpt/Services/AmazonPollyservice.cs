@@ -16,10 +16,7 @@ namespace OpenAIChatGpt.Services
 
         public AmazonPollyservice(ILogger<AmazonPollyservice> logger)
         {
-            //this.client = client;
-            //_client = new AmazonPollyClient(new BasicAWSCredentials("AKIAQ3LXPO572L6MG4WZ", "Si3XTJT5wkd/cSYPGuO9uZsgy5m1ggZO2NZlczxm"), RegionEndpoint.APSoutheast2);
             
-            //
             this.logger = logger;
             //this.voiceId = voiceId;
         }
@@ -41,7 +38,7 @@ namespace OpenAIChatGpt.Services
             };
           
             
-            AmazonPollyClient _client = new AmazonPollyClient(new BasicAWSCredentials("AKIAQ3LXPO572L6MG4WZ", "Si3XTJT5wkd/cSYPGuO9uZsgy5m1ggZO2NZlczxm"), RegionEndpoint.APSoutheast2);
+            AmazonPollyClient _client = new AmazonPollyClient(new BasicAWSCredentials("", ""), RegionEndpoint.APSoutheast2);
             
             SynthesizeSpeechResponse response = await _client.SynthesizeSpeechAsync(request);
 
@@ -60,7 +57,7 @@ namespace OpenAIChatGpt.Services
 
             // Call DescribeVoices API to get a list of available voices
             DescribeVoicesRequest voicesRequest = new DescribeVoicesRequest();
-            AmazonPollyClient _client = new AmazonPollyClient(new BasicAWSCredentials("AKIAQ3LXPO572L6MG4WZ", "Si3XTJT5wkd/cSYPGuO9uZsgy5m1ggZO2NZlczxm"), RegionEndpoint.APSoutheast2);
+            AmazonPollyClient _client = new AmazonPollyClient(new BasicAWSCredentials("", ""), RegionEndpoint.APSoutheast2);
             DescribeVoicesResponse voicesResponse = await _client.DescribeVoicesAsync(voicesRequest);
 
 

@@ -31,7 +31,7 @@ $(function () {
     document.getElementById('send-button').style.height = document.getElementById('myTextarea').offsetHeight + "px";
     console.log(key);
     isstream.checked = true;
-    apikeyInput.value = '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';
+    apikeyInput.value = '';
     if ('webkitSpeechRecognition' in window) {
         console.log("Speech recognition API supported");
         CN_SPEECH_REC_SUPPORTED = true;

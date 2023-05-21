@@ -145,9 +145,7 @@ namespace OpenAIChatGpt.Controllers
             //VoiceId = "";
             //_logger.LogInformation(content);
             Stopwatch sw1 = new Stopwatch();
-            //AmazonPollyClient amazonPollyClient = new AmazonPollyClient(new BasicAWSCredentials("AKIAQ3LXPO572L6MG4WZ", "Si3XTJT5wkd/cSYPGuO9uZsgy5m1ggZO2NZlczxm"), RegionEndpoint.APSoutheast2);
-            //new AmazonPollyservice(new AmazonPollyClient(new BasicAWSCredentials("AKIAQ3LXPO572L6MG4WZ", "Si3XTJT5wkd/cSYPGuO9uZsgy5m1ggZO2NZlczxm"), RegionEndpoint.APSoutheast2))
-
+           
             sw1.Start();
             var audioBytes = await _amazonPollyservice.Speak(ssmlMarks, voiceId, languageCode);
             sw1.Stop();
@@ -180,9 +178,7 @@ namespace OpenAIChatGpt.Controllers
                    // _logger.LogInformation(string.Join("///", items[0].messages));
                     _logger.LogInformation(string.Join("/n", items[0].messages.Select(p => $"{p.role}:{p.content.Replace("\r", "").Replace("\n", "")}")));
                     Stopwatch sw1 = new Stopwatch();
-                    //AmazonPollyClient amazonPollyClient = new AmazonPollyClient(new BasicAWSCredentials("AKIAQ3LXPO572L6MG4WZ", "Si3XTJT5wkd/cSYPGuO9uZsgy5m1ggZO2NZlczxm"), RegionEndpoint.APSoutheast2);
-                    //new AmazonPollyservice(new AmazonPollyClient(new BasicAWSCredentials("AKIAQ3LXPO572L6MG4WZ", "Si3XTJT5wkd/cSYPGuO9uZsgy5m1ggZO2NZlczxm"), RegionEndpoint.APSoutheast2))
-
+                   
                     sw1.Start();
                     var result = await _httpClient.GetCompletion(items[0], accessToken);
                     sw1.Stop();
@@ -204,8 +200,7 @@ namespace OpenAIChatGpt.Controllers
         }
         public async Task<IActionResult> GetPollyVoice()
         {
-            //AmazonPollyClient amazonPollyClient = new AmazonPollyClient(new BasicAWSCredentials("AKIAQ3LXPO572L6MG4WZ", "Si3XTJT5wkd/cSYPGuO9uZsgy5m1ggZO2NZlczxm"), RegionEndpoint.APSoutheast2);
-
+           
             var dict = await _amazonPollyservice.GetVoices();
             return Json(dict);
 
