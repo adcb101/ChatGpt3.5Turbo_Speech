@@ -26,11 +26,12 @@ var CN_SPEECH_REC_SUPPORTED = false;
 const key = Math.random().toString();
 var isAllBlur = false;
 const isstream = document.querySelector("#stream");
-
-(function () {
+const apikeyInput = document.getElementById('apikey')
+$(function () {
     document.getElementById('send-button').style.height = document.getElementById('myTextarea').offsetHeight + "px";
     console.log(key);
     isstream.checked = true;
+    apikeyInput.value = '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';
     if ('webkitSpeechRecognition' in window) {
         console.log("Speech recognition API supported");
         CN_SPEECH_REC_SUPPORTED = true;
@@ -39,8 +40,46 @@ const isstream = document.querySelector("#stream");
         CN_SPEECH_REC_SUPPORTED = false;
         warning = "\n\nWARNING: speech recognition (speech-to-text) is only available in Google Chrome desktop version at the moment. If you are using another browser, you will not be able to dictate text, but you can still listen to the bot's responses.";
     }
-})();
+    recognitionLanguage();
+    initPollySelect();
+  
+    populateVoiceList();
+   sortOptions(languageSelect.options);
+    sortOptions(child.options);
+    
+})
 
+
+
+function isPalyAudio() {
+    var audios = document.getElementsByClassName('play-audio');
+    let isPlaying = false
+    if (audios.length==0) {
+        return isPlaying
+    }
+    for (var i = 0; i < audios.length; i++) {
+        var audio = audios[i];
+        if (!audio.paused) {
+             isPlaying = true;
+            //audio.pause();
+           //audio.currentTime = 0;
+        } 
+    }
+    return isPlaying
+}
+
+function stopPalyAudio() {
+    var audios = document.getElementsByClassName('play-audio');
+    
+    for (var i = 0; i < audios.length; i++) {
+        var audio = audios[i];
+        if (!audio.paused) {
+            //return isPlaying = true;
+            audio.pause();
+            audio.currentTime = 0;
+        }
+    }
+}
 
 function resizeInput() {
     var input = document.getElementById('myTextarea');
@@ -219,11 +258,13 @@ audioButton.addEventListener('click', function (event) {
 skipButton.addEventListener('click', function (event) {
     synth.pause(); // Pause, and then...
     synth.cancel(); // Cancel everything
+    stopPalyAudio();
     CN_CURRENT_MESSAGE = null; // Remove current message
     // Restart listening maybe?
     CN_AfterSpeakOutLoudFinished();
 });
 let micEnabled = false;
+
 micButton.addEventListener('click', function (event) {
     $('.alert').alert()
     if (!micEnabled) {
@@ -366,8 +407,8 @@ async function sendMessage() {
                 //const apiEndpoint = "https://api.openai.com/v1/chat/completions";
                 // 获取 messages 的值
                 //const config = chats[currentChatIndex].config; // 获取 chats[currentChatIndex].config 的值
-                //const apikey = "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" ChatGpt/RelayAsync;
-                stream = await getChatCompletionStream("", "ChatGpt/ProxyToC", chatMessages);
+                var apikey = apikeyInput.value;
+                stream = await getChatCompletionStream(apikey, "ChatGpt/ProxyToC", chatMessages);
 
                 if (!stream) {
                     return;
@@ -429,7 +470,7 @@ async function sendMessage() {
                         if (CN_IS_LISTENING) CN_SPEECHREC.stop();
                         if (selectedVoice !== '请选择') {
 
-
+                            stopPalyAudio();
 
                             // Set the "src" attribute to the URL of the audio file
                             //playAudio.setAttribute('src', base64);
@@ -458,8 +499,9 @@ async function sendMessage() {
             }
 
         } else {
+            var apikey = apikeyInput.value;
             //const content=  await getChatCompletionStream("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", " ChatGpt/ProxyToC", chatMessages);
-            chatnormal("");
+            chatnormal(apikey);
         }
         //messageInput.value = '';
     }
@@ -580,7 +622,7 @@ function chatnormal(apiKey) {
             let lowestAudio = getLowstAudio();
             if (selectedVoice !== '请选择') {
                 const data = { content: result, polly: selectedVoice }
-
+                
                 $.post("ChatGpt/GetPollyBaseStr", data).done(function (response) {
 
                     const base64 = response;
@@ -594,14 +636,15 @@ function chatnormal(apiKey) {
 
                 });
 
-               
+
             }
             if (auEnabled) {
                 // If speech recognition is active, disable it
                 if (CN_IS_LISTENING) CN_SPEECHREC.stop();
+                
                 if (selectedVoice !== '请选择') {
 
-
+                    stopPalyAudio();
 
                     // Set the "src" attribute to the URL of the audio file
                     //playAudio.setAttribute('src', base64);
@@ -803,7 +846,7 @@ async function addChatMessage(role, content) {
         if (auEnabled) {
             if (CN_IS_LISTENING) CN_SPEECHREC.stop();
             if (selectedVoice != '请选择') {
-
+                stopPalyAudio();
                 if (playAudio.src === '') {
                     const data = { content: messageText, polly: selectedVoice }
                     //const base64 = getPollyBase64Str(data);
@@ -931,7 +974,7 @@ function populateVoiceList() {
 
 }
 
-populateVoiceList();
+
 
 var child = document.getElementById("Voices");
 
@@ -959,13 +1002,7 @@ function addChildOptions(options, parenttext) {
     }
 }
 
-window.onload = function () {
 
-    sortOptions(languageSelect.options);
-    sortOptions(child.options);
-    recognitionLanguage();
-    initPollySelect()
-};
 
 function sortOptions(options) {
     var options = options;
@@ -1173,13 +1210,13 @@ function CN_AfterSpeakOutLoudFinished() {
     // Finished speaking
     clearTimeout(CN_TIMEOUT_KEEP_SYNTHESIS_WORKING);
     console.log("Finished speaking out loud");
-
+    let isPalying= isPalyAudio()
     // restart listening
     CN_IS_READING = false;
     console.log("CN_AfterSpeakOutLoudFinished:" + CN_IS_READING);
     if (micEnabled) {
         setTimeout(function () {
-            if (!synth.speaking) {
+            if (!synth.speaking && !isPalying) {
                 if (CN_SPEECH_REC_SUPPORTED && CN_SPEECHREC && !CN_IS_LISTENING && !CN_PAUSED && !CN_SPEECHREC_DISABLED) CN_SPEECHREC.start();
                 clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
                 CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 1000);
@@ -1342,7 +1379,9 @@ function CN_SendMessage(text) {
 
 function CN_StartSpeechRecognition() {
     console.log("CN_StartSpeechRecognition:" + CN_IS_READING);
-    if (!synth.speaking) {
+    let isPlaying = isPalyAudio();
+    console.log("polly是否正在说话" + isPlaying);
+    if (!synth.speaking && !isPlaying) {
         if (CN_IS_READING) {
             clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
             CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 1000);
@@ -1427,6 +1466,8 @@ function CN_StartSpeechRecognition() {
 // Make sure the speech recognition is turned on when the bot is not speaking
 function CN_KeepSpeechRecWorking() {
     //if (CN_FINISHED) return; // Conversation finished
+    let isPlaying = isPalyAudio();
+    console.log("polly是否正在说话" + isPlaying);
     clearTimeout(CN_TIMEOUT_KEEP_SPEECHREC_WORKING);
     CN_TIMEOUT_KEEP_SPEECHREC_WORKING = setTimeout(CN_KeepSpeechRecWorking, 3000);
     if (!CN_IS_READING && !CN_IS_LISTENING && !CN_PAUSED) {
@@ -1435,7 +1476,7 @@ function CN_KeepSpeechRecWorking() {
         else {
             if (!CN_IS_LISTENING) {
                 try {
-                    if (CN_SPEECH_REC_SUPPORTED && !synth.speaking && !CN_SPEECHREC_DISABLED)
+                    if (CN_SPEECH_REC_SUPPORTED && !synth.speaking && !CN_SPEECHREC_DISABLED && !isPlaying)
                         CN_SPEECHREC.start();
                 } catch (e) { }
             }

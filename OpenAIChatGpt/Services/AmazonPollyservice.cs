@@ -10,12 +10,17 @@ namespace OpenAIChatGpt.Services
 {
     public class AmazonPollyservice : IAmazonPollyservice
     {
-        private readonly AmazonPollyClient client;
+        //private readonly AmazonPollyClient _client;
+        private readonly ILogger<AmazonPollyservice> logger;
 
 
-        public AmazonPollyservice(AmazonPollyClient client)
+        public AmazonPollyservice(ILogger<AmazonPollyservice> logger)
         {
-            this.client = client;
+            //this.client = client;
+            //_client = new AmazonPollyClient(new BasicAWSCredentials("AKIAQ3LXPO572L6MG4WZ", "Si3XTJT5wkd/cSYPGuO9uZsgy5m1ggZO2NZlczxm"), RegionEndpoint.APSoutheast2);
+            
+            //
+            this.logger = logger;
             //this.voiceId = voiceId;
         }
 
@@ -34,8 +39,11 @@ namespace OpenAIChatGpt.Services
                 LanguageCode = languageCode.Value,//LanguageCode.CmnCN,
                 Engine = "neural",
             };
-
-            SynthesizeSpeechResponse response = await client.SynthesizeSpeechAsync(request);
+          
+            
+            AmazonPollyClient _client = new AmazonPollyClient(new BasicAWSCredentials("AKIAQ3LXPO572L6MG4WZ", "Si3XTJT5wkd/cSYPGuO9uZsgy5m1ggZO2NZlczxm"), RegionEndpoint.APSoutheast2);
+            
+            SynthesizeSpeechResponse response = await _client.SynthesizeSpeechAsync(request);
 
             using (MemoryStream memoryStream = new MemoryStream())
             {
@@ -52,7 +60,8 @@ namespace OpenAIChatGpt.Services
 
             // Call DescribeVoices API to get a list of available voices
             DescribeVoicesRequest voicesRequest = new DescribeVoicesRequest();
-            DescribeVoicesResponse voicesResponse = await client.DescribeVoicesAsync(voicesRequest);
+            AmazonPollyClient _client = new AmazonPollyClient(new BasicAWSCredentials("AKIAQ3LXPO572L6MG4WZ", "Si3XTJT5wkd/cSYPGuO9uZsgy5m1ggZO2NZlczxm"), RegionEndpoint.APSoutheast2);
+            DescribeVoicesResponse voicesResponse = await _client.DescribeVoicesAsync(voicesRequest);
 
 
             List<PollyLanguage> voiceLanguageDict = new List<PollyLanguage>();

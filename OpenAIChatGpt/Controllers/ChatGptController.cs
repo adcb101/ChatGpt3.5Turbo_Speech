@@ -45,7 +45,7 @@ namespace OpenAIChatGpt.Controllers
 
         [HttpPost]
         public async Task<IActionResult> ProxyToC([FromBody] RequestData requestData)
-        {    _logger.LogInformation(string.Join("////", requestData.messages.Select(p => $"{p.role}:{p.content.Replace("\r", "").Replace("\n", "")}")));
+        {    _logger.LogInformation(string.Join("/n", requestData.messages.Select(p => $"{p.role}:{p.content.Replace("\r", "").Replace("\n", "")}")));
             
             if (requestData == null)
             {
@@ -143,7 +143,7 @@ namespace OpenAIChatGpt.Controllers
             VoiceId voiceId = new VoiceId(arr[2]);
             string ssmlMarks = $"<speak>{content}</speak>";
             //VoiceId = "";
-            _logger.LogInformation(content);
+            //_logger.LogInformation(content);
             Stopwatch sw1 = new Stopwatch();
             //AmazonPollyClient amazonPollyClient = new AmazonPollyClient(new BasicAWSCredentials("AKIAQ3LXPO572L6MG4WZ", "Si3XTJT5wkd/cSYPGuO9uZsgy5m1ggZO2NZlczxm"), RegionEndpoint.APSoutheast2);
             //new AmazonPollyservice(new AmazonPollyClient(new BasicAWSCredentials("AKIAQ3LXPO572L6MG4WZ", "Si3XTJT5wkd/cSYPGuO9uZsgy5m1ggZO2NZlczxm"), RegionEndpoint.APSoutheast2))
@@ -178,7 +178,7 @@ namespace OpenAIChatGpt.Controllers
                     var json = await reader.ReadToEndAsync();
                     var items = JsonSerializer.Deserialize<List<RequestData>>(json);
                    // _logger.LogInformation(string.Join("///", items[0].messages));
-                    _logger.LogInformation(string.Join("////", items[0].messages.Select(p => $"{p.role}:{p.content.Replace("\r", "").Replace("\n", "")}")));
+                    _logger.LogInformation(string.Join("/n", items[0].messages.Select(p => $"{p.role}:{p.content.Replace("\r", "").Replace("\n", "")}")));
                     Stopwatch sw1 = new Stopwatch();
                     //AmazonPollyClient amazonPollyClient = new AmazonPollyClient(new BasicAWSCredentials("AKIAQ3LXPO572L6MG4WZ", "Si3XTJT5wkd/cSYPGuO9uZsgy5m1ggZO2NZlczxm"), RegionEndpoint.APSoutheast2);
                     //new AmazonPollyservice(new AmazonPollyClient(new BasicAWSCredentials("AKIAQ3LXPO572L6MG4WZ", "Si3XTJT5wkd/cSYPGuO9uZsgy5m1ggZO2NZlczxm"), RegionEndpoint.APSoutheast2))

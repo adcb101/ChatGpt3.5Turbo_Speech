@@ -32,13 +32,22 @@ namespace OpenAIChatGpt.Services
 
         public async Task<string> GetCompletion(RequestData requestData,string apiKey)
         {
-            string[] apikeyArr = apiKey.Split(' ');
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apikeyArr[1]);
+            try
+            {
+                string[] apikeyArr = apiKey.Split(' ');
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apikeyArr[1]);
 
-            var responseMessage = await _httpClient.PostAsJsonAsync("chat/completions", requestData);
-            var response = await responseMessage.Content.ReadFromJsonAsync<ChatCompletion>();
-            //_logger.LogInformation(response.choices[0]);
-            return response.choices[0].message.Content;
+                var responseMessage = await _httpClient.PostAsJsonAsync("chat/completions", requestData);
+                var response = await responseMessage.Content.ReadFromJsonAsync<ChatCompletion>();
+                //_logger.LogInformation(response.choices[0]);
+                return response.choices[0].message.Content;
+            }
+            catch (Exception ex)
+            {
+
+                throw ;
+            }
+            
         }
         public async Task<HttpResponseMessage> GetCompletionStream(RequestData requestData,string apiKey)
         {

@@ -25,7 +25,7 @@ namespace OpenAIChatGpt
             //    //options.DeploymentId = "MyDeploymentId";
             //    //options.ResourceName = "MyResourceName";
             //});
-           builder.Services.AddSingleton<IAmazonPollyservice , AmazonPollyservice>(sp=> new AmazonPollyservice(new AmazonPollyClient(new BasicAWSCredentials("", ""), RegionEndpoint.APSoutheast2)));
+           builder.Services.AddSingleton<IAmazonPollyservice , AmazonPollyservice>();
 
           
             builder.Host.UseNLog(new NLogAspNetCoreOptions { CaptureMessageTemplates = true, CaptureMessageProperties = true });
