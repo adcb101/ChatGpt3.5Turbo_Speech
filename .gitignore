@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /OpenAIChatGpt/appsettings.json
 /OpenAIChatGpt/.config/dotnet-tools.json
+/OpenAIChatGpt/wwwroot/assets/icons/coreui/icons/svg

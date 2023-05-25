@@ -6,12 +6,15 @@
     <link rel="icon" type="image/png" href="~/favicon.png">
     <link rel="icon" type="image/svg+xml" href="~/favicon.svg">
     <title>OpenAI ChatGpt</title>
- 
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    
-    
+   
+    @* <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" /> *@
+   <script src="~/lib/jquery/dist/jquery-3.6.0.min.js"></script> 
+    <link rel="stylesheet" href="~/dist/css/main.css">
+    <script src="~/dist/js/bundle.js" defer></script>
+      @await RenderSectionAsync("Scripts", required: false)
+   
     @*<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" type="text/css" />*@
-    <link rel="apple-touch-icon" sizes="57x57" href="assets/favicon/apple-icon-57x57.png">
+    @*<link rel="apple-touch-icon" sizes="57x57" href="assets/favicon/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="assets/favicon/apple-icon-60x60.png">
     <link rel="apple-touch-icon" sizes="72x72" href="assets/favicon/apple-icon-72x72.png">
     <link rel="apple-touch-icon" sizes="76x76" href="assets/favicon/apple-icon-76x76.png">
@@ -25,15 +28,16 @@
     <link rel="icon" type="image/png" sizes="96x96" href="assets/favicon/favicon-96x96.png">
     <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon/favicon-16x16.png">
     <link rel="manifest" href="assets/favicon/manifest.json">
+    <meta name="msapplication-TileImage" content="assets/favicon/ms-icon-144x144.png">*@
     <meta name="msapplication-TileColor" content="#ffffff">
-    <meta name="msapplication-TileImage" content="assets/favicon/ms-icon-144x144.png">
+   
     <meta name="theme-color" content="#ffffff">
     <!-- Vendors styles-->
-    <link rel="stylesheet" href="vendors/simplebar/css/simplebar.css">
-    <link rel="stylesheet" href="css/vendors/simplebar.css">
+    @* <link rel="stylesheet" href="vendors/simplebar/css/simplebar.css">
+    <link rel="stylesheet" href="css/vendors/simplebar.css"> *@
     <!-- Main styles for this application-->
-    <link href="css/style.css" rel="stylesheet">
-    <link rel="stylesheet" href="~/chat/css/Chatstyle.css?v=1.0" type="text/css" />
+    @* <link href="css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="~/chat/css/Chatstyle.css?v=1.0" type="text/css" /> *@
     <!-- We use those styles to show code examples, you should remove them in your application.-->
     @* <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.23.0/themes/prism.css">
     <link href="css/examples.css" rel="stylesheet">*@
@@ -126,7 +130,7 @@
             <div class="container-fluid">
                 <button class="header-toggler px-md-0 me-md-3" type="button" onclick="coreui.Sidebar.getInstance(document.querySelector('#sidebar')).toggle()" >
                     <svg class="icon icon-lg">
-                        <use xlink:href="vendors/@@coreui/icons/svg/free.svg#cil-menu"></use>
+                        <use xlink:href="assets/icons/coreui/icons/svg/free.svg#cil-menu"></use>
                     </svg>
                 </button>
                 <a class="header-brand d-md-none" href="#">ChatGpt AI
@@ -153,11 +157,12 @@
         <div class="body flex-grow-1 " style="background-color: #353541;">
             @RenderBody()
         </div>
-        <footer class="footer">
-           @* <div><a href="https://coreui.io">CoreUI </a><a href="https://coreui.io">Bootstrap Admin Template</a> © 2022 creativeLabs.</div>
-            <div class="ms-auto">Powered by&nbsp;<a href="https://coreui.io/docs/">CoreUI UI Components</a></div>*@
-        </footer>
+       
     </div>
+    <footer class="footer">
+        @* <div><a href="https://coreui.io">CoreUI </a><a href="https://coreui.io">Bootstrap Admin Template</a> © 2022 creativeLabs.</div>
+        <div class="ms-auto">Powered by&nbsp;<a href="https://coreui.io/docs/">CoreUI UI Components</a></div>*@
+    </footer>
     <div class="modal fade " id="configModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
@@ -277,12 +282,8 @@
             </div>
         </div>
     </div>
-    <script>
-       
-        //stream
-        //temperature
-    </script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    
+    @* <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/lib/jquery/dist/jquery-3.6.0.min.js"></script>
     <script type="text/javascript" src="~/chat/js/Chatscript.js?version=1.1.6"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.min.js"></script>  
@@ -290,10 +291,11 @@
     <script src="vendors/@@coreui/coreui/js/coreui.bundle.min.js"></script>
     <script src="vendors/simplebar/js/simplebar.min.js"></script>
     <!-- Plugins and scripts required by this view-->
-    @*<script src="vendors/chart.js/js/chart.min.js"></script>
-    <script src="vendors/@@coreui/chartjs/js/coreui-chartjs.js"></script>*@
-    <script src="vendors/@@coreui/utils/js/coreui-utils.js"></script>
+    <script src="vendors/chart.js/js/chart.min.js"></script>
+    <script src="vendors/@@coreui/chartjs/js/coreui-chartjs.js"></script>
+    <script src="vendors/@@coreui/utils/js/coreui-utils.js"></script> *@
     @*<script src="js/main.js"></script>*@
-    @await RenderSectionAsync("Scripts", required: false)
+   
+    
 </body>
 </html>

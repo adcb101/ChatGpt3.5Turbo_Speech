@@ -38,7 +38,7 @@ namespace OpenAIChatGpt.Services
             };
           
             
-            AmazonPollyClient _client = new AmazonPollyClient(new BasicAWSCredentials("", ""), RegionEndpoint.APSoutheast2);
+            AmazonPollyClient _client = new AmazonPollyClient(new BasicAWSCredentials("AKIAQ3LXPO572L6MG4WZ", "Si3XTJT5wkd/cSYPGuO9uZsgy5m1ggZO2NZlczxm"), RegionEndpoint.APSoutheast2);
             
             SynthesizeSpeechResponse response = await _client.SynthesizeSpeechAsync(request);
 
@@ -53,42 +53,52 @@ namespace OpenAIChatGpt.Services
         }
 
         public async Task<List<PollyLanguage>> GetVoices() {
-            //var pollyClient = new AmazonPollyClient();
-
-            // Call DescribeVoices API to get a list of available voices
-            DescribeVoicesRequest voicesRequest = new DescribeVoicesRequest();
-            AmazonPollyClient _client = new AmazonPollyClient(new BasicAWSCredentials("", ""), RegionEndpoint.APSoutheast2);
-            DescribeVoicesResponse voicesResponse = await _client.DescribeVoicesAsync(voicesRequest);
-
-
-            List<PollyLanguage> voiceLanguageDict = new List<PollyLanguage>();
-
-            // Add voices and their corresponding language to the dictionary
-            foreach (Voice voice in voicesResponse.Voices)
+            try
             {
-                PollyLanguage pollyLanguage =new PollyLanguage() { 
-                VoiceName = voice.Name,
-                LanguageName= voice.LanguageName,
-                LanguageCode= voice.LanguageCode,
-                Gender= voice.Gender,
-                };
-                voiceLanguageDict.Add(pollyLanguage);
+                //var pollyClient = new AmazonPollyClient();
+
+                // Call DescribeVoices API to get a list of available voices
+                DescribeVoicesRequest voicesRequest = new DescribeVoicesRequest();
+                AmazonPollyClient _client = new AmazonPollyClient(new BasicAWSCredentials("AKIAQ3LXPO572L6MG4WZ", "Si3XTJT5wkd/cSYPGuO9uZsgy5m1ggZO2NZlczxm"), RegionEndpoint.APSoutheast2);
+                DescribeVoicesResponse voicesResponse = await _client.DescribeVoicesAsync(voicesRequest);
+
+
+                List<PollyLanguage> voiceLanguageDict = new List<PollyLanguage>();
+
+                // Add voices and their corresponding language to the dictionary
+                foreach (Voice voice in voicesResponse.Voices)
+                {
+                    PollyLanguage pollyLanguage = new PollyLanguage()
+                    {
+                        VoiceName = voice.Name,
+                        LanguageName = voice.LanguageName,
+                        LanguageCode = voice.LanguageCode,
+                        Gender = voice.Gender,
+                    };
+                    voiceLanguageDict.Add(pollyLanguage);
+                }
+                voiceLanguageDict.Sort(new PersonNameComparer());
+                // Print out the list of available voices
+                return voiceLanguageDict;
+                //// Call DescribeLanguages API to get a list of available languages
+                //DescribeLanguagesRequest languagesRequest = new DescribeLanguagesRequest();
+                //DescribeLanguagesResponse languagesResponse = await client.DescribeVoicesAsync(languagesRequest);
+
+                //// Print out the list of available languages
+                //Console.WriteLine("Available languages:");
+                //foreach (Language language in languagesResponse.Languages)
+                //{
+                //    Console.WriteLine("- " + language.LanguageName);
+                //}
+
+                //Console.ReadLine();
             }
-            voiceLanguageDict.Sort(new PersonNameComparer());
-            // Print out the list of available voices
-            return voiceLanguageDict;
-            //// Call DescribeLanguages API to get a list of available languages
-            //DescribeLanguagesRequest languagesRequest = new DescribeLanguagesRequest();
-            //DescribeLanguagesResponse languagesResponse = await client.DescribeVoicesAsync(languagesRequest);
+            catch (Exception ex)
+            {
 
-            //// Print out the list of available languages
-            //Console.WriteLine("Available languages:");
-            //foreach (Language language in languagesResponse.Languages)
-            //{
-            //    Console.WriteLine("- " + language.LanguageName);
-            //}
-
-            //Console.ReadLine();
+                throw;
+            }
+            
         }
 
 

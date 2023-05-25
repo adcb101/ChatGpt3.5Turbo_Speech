@@ -1,0 +1,41 @@
+{
+  "dependencies": {
+    "@popperjs/core": "^2.11.7",
+    "bootstrap": "^4.5.2",
+    "@coreui/coreui": "^4.2.3",
+    "@coreui/icons": "^2.1.0",
+    "jquery":"^3.6.0",
+    "simplebar": "^5.3.9"
+  },
+  "name": "OpenAIChatGpt",
+  "description": "<h1 align=\"center\">\r   ChatGpt AI Assistant Learner\r </h1>",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "directories": {
+    "doc": "doc"
+  },
+  
+  "scripts": {
+    "build": "webpack",
+    "watch": "webpack --watch"
+  },
+
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "autoprefixer": "10.4.14",
+    "clean-webpack-plugin": "4.0.0",
+    "css-loader": "6.7.4",
+    "html-webpack-plugin": "5.5.1",
+    "mini-css-extract-plugin": "2.7.6",
+    "postcss-loader": "7.3.0",
+    "sass": "1.62.1",
+    "sass-loader": "13.3.0",
+    "style-loader": "3.3.3",
+    "terser-webpack-plugin": "5.3.9",
+    "webpack": "5.83.1",
+    "webpack-cli": "5.1.1"
+  }
+}
