@@ -27,6 +27,7 @@ const key = Math.random().toString();
 var isAllBlur = false;
 const isstream = document.querySelector("#stream");
 const apikeyInput = document.getElementById('apikey')
+var agent;
 $(function () {
     document.getElementById('send-button').style.height = messageInput.offsetHeight + "px";
     console.log(key);
@@ -42,11 +43,10 @@ $(function () {
     }
     recognitionLanguage();
     initPollySelect();
-
+  
     populateVoiceList();
-    sortOptions(languageSelect.options);
-    sortOptions(child.options);
-
+    
+  
 })
 
 
@@ -900,90 +900,139 @@ let voices = [];
 let parentOptions = [];
 let childOptions = [];
 
+
+
+function agentType(){
+
+    var userAgent = navigator.userAgent.toLowerCase();
+    var isChrome = /chrome/.test(userAgent);
+    var isEdge = /edg/.test(userAgent);
+    var isMobile = /mobile/.test(userAgent);
+    if (isChrome && !isEdge){
+        childVoices.style.display="none";  
+        agent= "google"  
+    }
+       
+    if (isEdge&&isMobile)
+       agent= "edgeMobile"
+
+}
+
 function populateVoiceList() {
-    voices = synth.getVoices().sort(function (a, b) {
-        const aname = a.name.split("-")[1].toUpperCase();
-        const bname = b.name.split("-")[1].toUpperCase();
 
-        if (aname < bname) {
-            return -1;
-        } else if (aname == bname) {
-            return 0;
-        } else {
-            return +1;
-        }
-    });
-    const selectedIndex =
-        languageSelect.selectedIndex < 0 ? 32 : languageSelect.selectedIndex;
-    languageSelect.innerHTML = "";
+    agentType();
+    if (agent=='edgeMobile')
+    {
+        voices = synth.getVoices().slice(0,300);
+    }else{
+        voices = synth.getVoices();
+    }
+    if (agent=="google") {
+        for(i = 0; i < voices.length ; i++) {
+            var option = document.createElement('option');
+            option.textContent = voices[i].name + ' (' + voices[i].lang + ')';
+        
+            if(voices[i].default) {
+              option.textContent += ' -- DEFAULT';
+            }
+        
+            option.setAttribute('data-lang', voices[i].lang);
+            option.setAttribute('data-name', voices[i].name);
+            languageSelect.appendChild(option);
+          }
+          //sortOptions(languageSelect.options);
+         
+    }
+    else{
 
-    var childOption = [];
-    for (let i = 1; i <= voices.length; i++) {
-        //if (voices[i].lang == 'en-AU' || voices[i].lang == 'zh-CN' || voices[i].lang == 'en-US') {
-        const option = document.createElement("option");
-
-        var arr = voices[i - 1].name.split("-");
-        if (arr[1] == undefined) {
-            //option.textContent = `${name[1]} `;
-            console.log(arr[0])
-
-        } else {
-
-            if (i == 1) {
-
-                parentOptions.push(arr[1].trim());
-                option.textContent = parentOptions[parentOptions.length - 1]
-                if (voices[i - 1].default) {
-                    option.textContent += " -- DEFAULT";
-                }
-                option.setAttribute("Value", parentOptions.length - 1);
-                option.setAttribute("data-name", parentOptions[parentOptions.length - 1]);
-                languageSelect.appendChild(option);
-                childOption.push(arr[0]);
+        voices = voices.sort(function (a, b) {
+            const aname = a.name.split("-")[1].toUpperCase();
+            const bname = b.name.split("-")[1].toUpperCase();
+    
+            if (aname < bname) {
+                return -1;
+            } else if (aname == bname) {
+                return 0;
             } else {
-                //.textContent = `${name[0]} - ${name[1]} `;
-                if (parentOptions[parentOptions.length - 1] != arr[1].trim()) {
+                return +1;
+            }
+        });
+    
+        const selectedIndex =
+            languageSelect.selectedIndex < 0 ? 32 : languageSelect.selectedIndex;
+        languageSelect.innerHTML = "";
+    
+        var childOption = [];
+        for (let i = 1; i <= voices.length; i++) {
+            //if (voices[i].lang == 'en-AU' || voices[i].lang == 'zh-CN' || voices[i].lang == 'en-US') {
+            const option = document.createElement("option");
+    
+            var arr = voices[i - 1].name.split("-");
+            if (arr[1] == undefined) {
+                //option.textContent = `${name[1]} `;
+                console.log(arr[0])
+    
+            } else {
+    
+                if (i == 1) {
+    
                     parentOptions.push(arr[1].trim());
-
                     option.textContent = parentOptions[parentOptions.length - 1]
                     if (voices[i - 1].default) {
                         option.textContent += " -- DEFAULT";
                     }
                     option.setAttribute("Value", parentOptions.length - 1);
-
-                    //option.setAttribute("data-lang", voices[i].lang);
                     option.setAttribute("data-name", parentOptions[parentOptions.length - 1]);
                     languageSelect.appendChild(option);
-                    childOptions.push(childOption);
-                    childOption = [];
                     childOption.push(arr[0]);
                 } else {
-                    childOption.push(arr[0]);
-                    if (i == voices.length) {
-
-
+                    //.textContent = `${name[0]} - ${name[1]} `;
+                    if (parentOptions[parentOptions.length - 1] != arr[1].trim()) {
+                        parentOptions.push(arr[1].trim());
+    
+                        option.textContent = parentOptions[parentOptions.length - 1]
+                        if (voices[i - 1].default) {
+                            option.textContent += " -- DEFAULT";
+                        }
+                        option.setAttribute("Value", parentOptions.length - 1);
+    
+                        //option.setAttribute("data-lang", voices[i].lang);
+                        option.setAttribute("data-name", parentOptions[parentOptions.length - 1]);
+                        languageSelect.appendChild(option);
                         childOptions.push(childOption);
                         childOption = [];
+                        childOption.push(arr[0]);
+                    } else {
+                        childOption.push(arr[0]);
+                        if (i == voices.length) {
+    
+    
+                            childOptions.push(childOption);
+                            childOption = [];
+                        }
                     }
+    
                 }
-
+    
             }
-
+    
         }
-
+        //console.log(parentOptions);
+        languageSelect.selectedIndex = selectedIndex;
+        sortOptions(languageSelect.options);
+        sortOptions(childVoices.options);
     }
-    //console.log(parentOptions);
-    languageSelect.selectedIndex = selectedIndex;
+    
 
 }
 
 
-
-var child = document.getElementById("Voices");
+const childVoices = document.getElementById("Voices");
 
 //为父级下拉菜单添加事件监听 
 languageSelect.addEventListener("click", function () { // 重置子下拉菜单的选项
-    child.length = 1;
+    if (agent!='google') { 
+      childVoices.length = 1;
     //child.options.length = 0; 
     // 如果选择了默认选项，则返回 
     if (languageSelect.value == "0") return;
@@ -991,7 +1040,9 @@ languageSelect.addEventListener("click", function () { // 重置子下拉菜单�
     var m = parseInt(languageSelect.value);
     var options = childOptions[m];
     var text = $('#Languages option:selected').text()
-    addChildOptions(options, text);
+     addChildOptions(options, text);
+    }
+    
 });
 
 function addChildOptions(options, parenttext) {
@@ -1001,7 +1052,7 @@ function addChildOptions(options, parenttext) {
 
         option.setAttribute("data-name", options[i] + "- " + parenttext);
         option.text = options[i];
-        child.add(option);
+        childVoices.add(option);
     }
 }
 
@@ -1073,9 +1124,9 @@ function speak(valueinput) {
         utterThis.onerror = function (event) {
             console.log("SpeechSynthesisUtterance.onerror");
         };
-
-        const selectedOption =
-            child.selectedOptions[0].getAttribute("data-name");
+        
+        const selectedOption = agent=='google'?
+          languageSelect.selectedOptions[0].getAttribute("data-name"):childVoices.selectedOptions[0].getAttribute("data-name");
 
         for (let i = 0; i < voices.length; i++) {
             if (voices[i].name === selectedOption) {
@@ -1102,9 +1153,9 @@ rate.onchange = function () {
     rateValue.textContent = rate.value;
 };
 
-child.onchange = function () {
-    //speak(inputTxt.value);
-};
+//child.onchange = function () {
+//    //speak(inputTxt.value);
+//};
 
 ///Talk to ChatGpt extension
 
@@ -1167,9 +1218,9 @@ function CN_SayOutLoud(text) {
     var msg = new SpeechSynthesisUtterance();
     msg.text = text;
 
-
-    const selectedOption =
-        child.selectedOptions[0].getAttribute("data-name");
+    const selectedOption = agent=='google'?
+    languageSelect.selectedOptions[0].getAttribute("data-name"):childVoices.selectedOptions[0].getAttribute("data-name");
+    
 
     for (let i = 0; i < voices.length; i++) {
         if (voices[i].name === selectedOption) {
