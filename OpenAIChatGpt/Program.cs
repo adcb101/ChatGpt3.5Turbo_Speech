@@ -3,6 +3,7 @@ using Amazon.Polly;
 using Amazon.Runtime;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using NLog.Web;
 using OpenAI.GPT3.Extensions;
 using OpenAIChatGpt.Services;
@@ -17,6 +18,8 @@ namespace OpenAIChatGpt
         {
             var logger = NLogBuilder.ConfigureNLog("NLog.config").GetCurrentClassLogger();
             var builder = WebApplication.CreateBuilder(args);
+
+          
             builder.Services.AddControllersWithViews();
             //builder.Services.AddOpenAIService(options =>
             //{   

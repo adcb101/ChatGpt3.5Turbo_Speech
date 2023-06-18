@@ -80,18 +80,7 @@ namespace OpenAIChatGpt.Services
                 voiceLanguageDict.Sort(new PersonNameComparer());
                 // Print out the list of available voices
                 return voiceLanguageDict;
-                //// Call DescribeLanguages API to get a list of available languages
-                //DescribeLanguagesRequest languagesRequest = new DescribeLanguagesRequest();
-                //DescribeLanguagesResponse languagesResponse = await client.DescribeVoicesAsync(languagesRequest);
-
-                //// Print out the list of available languages
-                //Console.WriteLine("Available languages:");
-                //foreach (Language language in languagesResponse.Languages)
-                //{
-                //    Console.WriteLine("- " + language.LanguageName);
-                //}
-
-                //Console.ReadLine();
+              
             }
             catch (Exception ex)
             {

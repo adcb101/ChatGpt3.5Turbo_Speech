@@ -18,6 +18,7 @@
 
 	<ItemGroup>
 		<Folder Include="wwwroot\chat\" />
+		<Folder Include="Factoryies\" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -38,33 +39,33 @@
 	</ItemGroup>
 	<ItemGroup>
 		<!-- Don't publish the MPA source files, but do show them in the project files list -->
-		<Content Remove="$(MpaRoot)**"/>
-		<None Remove="$(MpaRoot)**"/>
-		<None Include="$(MpaRoot)**" Exclude="$(MpaRoot)node_modules\**"/>
+		<Content Remove="$(MpaRoot)**" />
+		<None Remove="$(MpaRoot)**" />
+		<None Include="$(MpaRoot)**" Exclude="$(MpaRoot)node_modules\**" />
 	</ItemGroup>
 
 	<Target Name="NpmInstall" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(MpaRoot)node_modules') ">
 		<!-- Ensure Node.js is installed -->
 		<Exec Command="node --version" ContinueOnError="true">
-			<Output TaskParameter="ExitCode" PropertyName="ErrorCode"/>
+			<Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
 		</Exec>
-		<Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build and run this project. To continue, please install Node.js from https://nodejs.org/, and then restart your command prompt or IDE."/>
-		<Message Importance="high" Text="Restoring dependencies using 'npm'. This may take several minutes..."/>
-		<Exec WorkingDirectory="$(MpaRoot)" Command="npm install"/>
+		<Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build and run this project. To continue, please install Node.js from https://nodejs.org/, and then restart your command prompt or IDE." />
+		<Message Importance="high" Text="Restoring dependencies using 'npm'. This may take several minutes..." />
+		<Exec WorkingDirectory="$(MpaRoot)" Command="npm install" />
 	</Target>
 
 	<Target Name="NpmRunBuild" BeforeTargets="Build" DependsOnTargets="NpmInstall">
-		<Exec WorkingDirectory="$(MpaRoot)" Command="npm run build"/>
+		<Exec WorkingDirectory="$(MpaRoot)" Command="npm run build" />
 	</Target>
 
 	<Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
-		<!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
-		<Exec WorkingDirectory="$(MpaRoot)" Command="npm install"/>
-		<Exec WorkingDirectory="$(MpaRoot)" Command="npm run build"/>
+		 <!--As part of publishing, ensure the JS resources are freshly built in production mode--> 
+		<Exec WorkingDirectory="$(MpaRoot)" Command="npm install" />
+		<Exec WorkingDirectory="$(MpaRoot)" Command="npm run build" />
 
-		<!-- Include the newly-built files in the publish output -->
+		 <!--Include the newly-built files in the publish output--> 
 		<ItemGroup>
-			<DistFiles Include="$(WWWRoot)dist\**"/>
+			<DistFiles Include="$(WWWRoot)dist\**" />
 			<ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
 				<RelativePath>%(DistFiles.Identity)</RelativePath>
 				<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
@@ -74,8 +75,24 @@
 	</Target>
 
 	<Target Name="NpmClean" BeforeTargets="Clean">
-		<RemoveDir Directories="$(WWWRoot)dist"/>
-		<RemoveDir Directories="$(MpaRoot)node_modules"/>
+		<RemoveDir Directories="$(WWWRoot)dist" />
+		<RemoveDir Directories="$(MpaRoot)node_modules" />
 	</Target>
+
+	<ItemGroup>
+	  <Content Remove="Views\Shared\Template.cshtml" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <UpToDateCheckInput Remove="Views\Shared\Template.cshtml" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <_ContentIncludedByDefault Remove="Views\Shared\Template.cshtml" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="Views\Shared\Template.cshtml" />
+	</ItemGroup>
 
 </Project>

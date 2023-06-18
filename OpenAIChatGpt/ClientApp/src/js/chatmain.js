@@ -30,9 +30,15 @@ const apikeyInput = document.getElementById('apikey')
 var agent;
 $(function () {
     document.getElementById('send-button').style.height = messageInput.offsetHeight + "px";
-    console.log(key);
+    //console.log(key);
     isstream.checked = true;
-    apikeyInput.value = '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';
+
+    var savedInput = localStorage.getItem('apikey');
+    //console.log('storge：' + savedInput);
+    if (savedInput) {
+        apikeyInput.value = savedInput;
+    }
+    //apikeyInput.value = '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';
     if ('webkitSpeechRecognition' in window) {
         console.log("Speech recognition API supported");
         CN_SPEECH_REC_SUPPORTED = true;
@@ -48,8 +54,15 @@ $(function () {
     
   
 })
+apikeyInput.addEventListener('change', function (event) {
+    let apikey = apikeyInput.value;
+    
+    localStorage.setItem('apikey', apikey);
+   
+})
 
 
+  
 
 function isPalyAudio() {
     var audios = document.getElementsByClassName('play-audio');
@@ -101,7 +114,7 @@ function resetHeight() {
         input.style.height = 45 + "px"; /* 宽的高度回落到默认高度 */
     }
 }
-messageInput.addEventListener('oninput', function (event) {
+messageInput.addEventListener('input', function (event) {
     resizewrapper();
 })
 function resizewrapper() {
@@ -201,6 +214,8 @@ $('#configModal').on('shown.coreui.modal', function () {
     // maxtoken.onchange = function () {
     //     maxtokenvalue.textContent = maxtoken.value;
     // };
+
+
     const temperaturevalue = document.querySelector(".temperature-value");
 
     temperature.onchange = function () {
@@ -354,6 +369,8 @@ function parseEventSource(data) {
 }
 
 async function getChatCompletionStream(apiKey, endPoint, messages) {
+
+    
     const endpoint = endPoint; // 替换为实际的 API endpoint
 
     const response = await fetch(endpoint, {
@@ -375,8 +392,8 @@ async function getChatCompletionStream(apiKey, endPoint, messages) {
     });
 
     if (!response.ok) {
-        console.log(await response.text());
-        throw new Error(await response.text());
+        //console.log(await response.text());
+        //throw new Error(await response.text());
 
     }
 
@@ -387,10 +404,16 @@ async function sendMessage() {
     const message = messageInput.value;
     outPutContent = "";
     if (message.trim() !== '') {
+        let apikey = apikeyInput.value;
 
+        if (apikey == "") {
+            alert("请输入ApiKey");
+            return;
+        }
         var role = "user";
+        
         await addChatMessage("User", message);
-
+       
         const chatmessage = {
             role: "user",
             content: message,
@@ -401,8 +424,9 @@ async function sendMessage() {
         chatMessages.push(chatmessage)
         //let requestMessage = JSON.stringify(chatMessages);
 
-        console.log(chatMessages);
-
+        //console.log(chatMessages);
+      
+      
 
         //isstream.checked=true;
         if (isstream.checked) {
@@ -410,7 +434,7 @@ async function sendMessage() {
                 //const apiEndpoint = "https://api.openai.com/v1/chat/completions";
                 // 获取 messages 的值
                 //const config = chats[currentChatIndex].config; // 获取 chats[currentChatIndex].config 的值
-                var apikey = apikeyInput.value;
+                //var apikey = apikeyInput.value;
                 stream = await getChatCompletionStream(apikey, "ChatGpt/ProxyToC", chatMessages);
 
                 if (!stream) {
@@ -466,7 +490,7 @@ async function sendMessage() {
 
 
                         lowestAudio.setAttribute('src', base64);
-                        console.log(lowestAudio);
+                        //console.log(lowestAudio);
                     }
                     if (auEnabled) {
                         // If speech recognition is active, disable it
@@ -502,7 +526,7 @@ async function sendMessage() {
             }
 
         } else {
-            var apikey = apikeyInput.value;
+           
             //const content=  await getChatCompletionStream("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", " ChatGpt/ProxyToC", chatMessages);
             chatnormal(apikey);
         }
@@ -556,33 +580,17 @@ async function initPollySelect() {
         }
     } catch (error) {
         // 处理请求错误
-        throw error;
+        //throw error;
     }
-    //$.post("ChatGpt/GetPollyVoice").done(function (response) {
-    //    //addChatMessage("Assistant", response.content);
-    //const voiceLanguageDict = await postFunc("ChatGpt/GetPollyVoice", data)
-    //    const voiceLanguageDict = response;
-    //    //console.log(voiceLanguageDict);
-    //    for (var i = 0; i < voiceLanguageDict.length; i++) {
-    //        const optionElem = document.createElement('option');
-
-    //        optionElem.value = voiceLanguageDict[i].languageCode+'-'+voiceLanguageDict[i].voiceName;
-    //        optionElem.textContent = voiceLanguageDict[i].languageName + '-' + voiceLanguageDict[i].voiceName;
-    //        polly.add(optionElem);
-    //    }
-
-    //    //return response.content;
-    //    // 处理响应数据
-    //}).fail(function (xhr) {
-    //    //alert("出现异常，请重新输入或说话");
-    //    console.log("出现异常，请重新输入或说话")
-
-    //});
+    
 
 
 }
 
 function chatnormal(apiKey) {
+
+    
+
     const items = [
         {
             messages: chatMessages,
@@ -608,8 +616,9 @@ function chatnormal(apiKey) {
     fetch(url, options)
         .then(response => {
             if (!response.ok) {
-                throw new Error("Network response was not ok");
-
+                console.log( response.text());
+                //console.error("There was a problem with the fetch operation:", error);
+                //throw new Error("Network response was not ok");
             }
             return response.json();
         })
@@ -630,7 +639,7 @@ function chatnormal(apiKey) {
 
                     const base64 = response;
                     lowestAudio.setAttribute('src', base64);
-                    console.log(lowestAudio);
+                    //console.log(lowestAudio);
 
                     // 处理响应数据
                 }).fail(function (xhr) {
@@ -803,33 +812,9 @@ async function addChatMessage(role, content) {
     const playButton = message.querySelector('.play-button');
     const playAudio = message.querySelector('.play-audio')
     const messageContent = message.querySelector('.chat-message-content');
-    const messageText = messageContent.textContent.trim();
-    const selectedVoice = polly.value;
-    console.log(selectedVoice)
-    if (selectedVoice != '请选择') {
-
-
-        //if (playAudio.src === '' && content.trim() !== '' && role == "Assistant" && isstream.checked==true) {
-        //    const data = { content: content.trim(), polly: selectedVoice }
-        //    //const data =  content.trim()+'~'+ selectedVoice 
-
-        //    //const base64 = getPollyBase64Str(data);
-        //    const base64 = await postFunc('ChatGpt/GetPollyBaseStr', data);
-        //    // console.log(base64);
-        //    // Set the "src" attribute to the URL of the audio file
-
-
-        //    playAudio.setAttribute('src', base64);
-
-        //    console.log(playAudio);
-
-        //    // Play the audio file
-        //    //audioElem.play();
-        //}
-
-
-
-    }
+    //const messageText = messageContent.textContent.trim();
+    //const selectedVoice = polly.value;
+   
     const box = message.querySelector('.blur-div');
     if (role == 'User') {
         box.setAttribute('id', role);
@@ -856,11 +841,11 @@ async function addChatMessage(role, content) {
                     // Set the "src" attribute to the URL of the audio file
                     const base64 = await postFunc('ChatGpt/GetPollyBaseStr', data);
                     playAudio.setAttribute('src', base64);
-                    console.log(playAudio);
+                    //console.log(playAudio);
                     // Play the audio file
                     playAudio.play();
                 } else {
-                    console.log(playAudio);
+                    //console.log(playAudio);
                     playAudio.play();
 
                 }
@@ -871,14 +856,14 @@ async function addChatMessage(role, content) {
             }
 
         }
-        console.log(messageText);
+        //console.log(messageText);
     });
 
     const blurmessagecontent = message.querySelector('.blur-div');
     let blurEnabled = false;
     blurmessagecontent.addEventListener('click', function () {
 
-        console.log(isAllBlur);
+       // console.log(isAllBlur);
         if (isAllBlur) {
 
             if (!blurEnabled) {
@@ -888,7 +873,7 @@ async function addChatMessage(role, content) {
                 blurmessagecontent.style.filter = "blur(10px)";
             }
             blurEnabled = !blurEnabled;
-            console.log(blurEnabled);
+            //console.log(blurEnabled);
         }
 
     });
@@ -903,7 +888,7 @@ let childOptions = [];
 
 
 function agentType(){
-
+    // console.log("agentType");
     var userAgent = navigator.userAgent.toLowerCase();
     var isChrome = /chrome/.test(userAgent);
     var isEdge = /edg/.test(userAgent);
@@ -912,6 +897,7 @@ function agentType(){
         childVoices.style.display="none";  
         agent= "google"  
     }
+
        
     if (isEdge&&isMobile)
        agent= "edgeMobile"
@@ -919,7 +905,7 @@ function agentType(){
 }
 
 function populateVoiceList() {
-
+    //console.log("populateVoiceList");
     agentType();
     if (agent=='edgeMobile')
     {
@@ -940,7 +926,7 @@ function populateVoiceList() {
             option.setAttribute('data-name', voices[i].name);
             languageSelect.appendChild(option);
           }
-          //sortOptions(languageSelect.options);
+          sortOptions(languageSelect);
          
     }
     else{
@@ -970,7 +956,7 @@ function populateVoiceList() {
             var arr = voices[i - 1].name.split("-");
             if (arr[1] == undefined) {
                 //option.textContent = `${name[1]} `;
-                console.log(arr[0])
+                //console.log(arr[0])
     
             } else {
     
@@ -1019,8 +1005,8 @@ function populateVoiceList() {
         }
         //console.log(parentOptions);
         languageSelect.selectedIndex = selectedIndex;
-        sortOptions(languageSelect.options);
-        sortOptions(childVoices.options);
+        sortOptions(languageSelect);
+        sortOptions(childVoices);
     }
     
 
@@ -1058,8 +1044,9 @@ function addChildOptions(options, parenttext) {
 
 
 
-function sortOptions(options) {
-    var options = options;
+function sortOptions(select) {
+    var options = select.options;
+    //const options =  select.options.filter((item, index) => arr.indexOf(item) === index)
     var sorted = [];
     for (var i = 0; i < options.length; i++) {
         sorted.push(options[i]);
@@ -1070,7 +1057,7 @@ function sortOptions(options) {
         return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
     });
     for (var i = 0; i < sorted.length; i++) {
-        languageSelect.appendChild(sorted[i]);
+        select.appendChild(sorted[i]);
     }
 }
 
@@ -1102,6 +1089,7 @@ function recognitionLanguage() {
 
 
 if (synth.onvoiceschanged !== undefined) {
+    console.log("synth.onvoiceschanged");
     synth.onvoiceschanged = populateVoiceList;
 }
 
