@@ -1,8 +1,8 @@
 {
   "dependencies": {
-    "@coreui/coreui": "^4.2.3",
-    "@coreui/icons": "^2.1.0",
-    "@popperjs/core": "^2.11.7",
+    "@coreui/coreui": "4.2.3",
+    "@coreui/icons": "2.1.0",
+    "@popperjs/core": "2.11.7",
     "bootstrap": "^4.5.2",
     "simplebar": "^5.3.9"
   },

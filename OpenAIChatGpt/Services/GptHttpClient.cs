@@ -1,10 +1,15 @@
-﻿using Amazon.Runtime.Internal.Transform;
+﻿using Amazon.Runtime.Endpoints;
+using Amazon.Runtime.Internal.Transform;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
+using OpenAI.GPT3.Extensions;
 using OpenAI.GPT3.ObjectModels.RequestModels;
+using OpenAI.GPT3.ObjectModels.ResponseModels;
 using OpenAIChatGpt.Models;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.CompilerServices;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -65,10 +70,66 @@ namespace OpenAIChatGpt.Services
             
 
         }
+        public  async  IAsyncEnumerable<ChatCompletionCreateResponse> CreateCompletionAsStream(RequestData requestData, string apiKey,
+       [EnumeratorCancellation] CancellationToken cancellationToken = default)
+        {
+            // Mark the request as streaming
+            //chatCompletionCreateRequest.Stream = true;
+
+            // Send the request to the CompletionCreate endpoint
+            //chatCompletionCreateRequest.ProcessModelId(modelId, _defaultModelId);
+            string[] apikeyArr = apiKey.Split(' ');
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apikeyArr[1]);
+            using var response = _httpClient.PostAsStreamAsync("https://api.openai.com/v1/chat/completions", requestData, cancellationToken);
+            await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+            using var reader = new StreamReader(stream);
+            // Continuously read the stream until the end of it
+            while (!reader.EndOfStream)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                var line = await reader.ReadLineAsync();
+                // Skip empty lines
+                if (string.IsNullOrEmpty(line))
+                {
+                    continue;
+                }
+
+                line = line.RemoveIfStartWith("data: ");
+
+                // Exit the loop if the stream is done
+                if (line.StartsWith("[DONE]"))
+                {
+                    break;
+                }
+
+                ChatCompletionCreateResponse? block;
+                try
+                {
+                    // When the response is good, each line is a serializable CompletionCreateRequest
+                    block = JsonSerializer.Deserialize<ChatCompletionCreateResponse>(line);
+                }
+                catch (Exception)
+                {
+                    // When the API returns an error, it does not come back as a block, it returns a single character of text ("{").
+                    // In this instance, read through the rest of the response, which should be a complete object to parse.
+                    line += await reader.ReadToEndAsync();
+                    block = JsonSerializer.Deserialize<ChatCompletionCreateResponse>(line);
+                }
+
+
+                if (null != block)
+                {
+                    yield return block;
+                }
+            }
+        }
+
+
     }
 
-    
 
-   
+
+
 }
 

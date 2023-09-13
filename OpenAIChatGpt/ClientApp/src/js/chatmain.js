@@ -198,7 +198,7 @@ const modalconfim = document.querySelector("#modalconfim")
 modalconfim.addEventListener('click', () => {
 
     headisstream.innerHTML = "流模式: " + isstream.checked;
-    headmodel.innerHTML = "模型: " + model.value;
+    headmodel.innerHTML = "模型: "+model.value;//
     //headmaktoken.innerHTML = "最大Token: " + maxtoken.value;
     headtemp.innerHTML = "采样温度: " + temperature.value;
 

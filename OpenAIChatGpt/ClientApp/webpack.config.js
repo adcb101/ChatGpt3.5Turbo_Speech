@@ -19,9 +19,9 @@ module.exports = {
   },
   //devtool: 'eval-source-map',
   devtool:'nosources-cheap-source-map',
-  //
+ 
   mode: 'production',
-  //mode: 'development',
+ // mode: 'development',
 
   module: {
     rules: [

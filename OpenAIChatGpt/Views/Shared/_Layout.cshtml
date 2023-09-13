@@ -7,7 +7,7 @@
     <link rel="icon" type="image/svg+xml" href="~/favicon.svg">
     <title>OpenAI ChatGpt</title>
   
-    <link rel="stylesheet" href="~/dist/css/main.5f7ecd664159f23d980e.css">
+    <link rel="stylesheet" href="~/dist/css/main.e71f369264aca1676cfd.css">
     @await RenderSectionAsync("Css", required: false)
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="theme-color" content="#ffffff">
@@ -117,7 +117,7 @@
                 </a>
                 <div class="configMenu">
                     <div id="headisstream"  data-coreui-toggle="modal" data-coreui-target="#configModal" class="text-center p-1 rounded-md bg-gray-300/20 dark:bg-gray-900/10 hover:bg-gray-300/50 dark:hover:bg-gray-900/50">流模式: true</div>
-                    <div id="headmodel" data-coreui-toggle="modal" data-coreui-target="#configModal" class="text-center p-1 rounded-md bg-gray-300/20 dark:bg-gray-900/10 hover:bg-gray-300/50 dark:hover:bg-gray-900/50">模型: gpt-3.5-turbo-16k</div>
+                    <div id="headmodel" data-coreui-toggle="modal" data-coreui-target="#configModal" class="text-center p-1 rounded-md bg-gray-300/20 dark:bg-gray-900/10 hover:bg-gray-300/50 dark:hover:bg-gray-900/50">模型: gpt-3.5-turbo</div>
                     @* <div id="headmaktoken" data-coreui-toggle="modal" data-coreui-target="#configModal" class="text-center p-1 rounded-md bg-gray-300/20 dark:bg-gray-900/10 hover:bg-gray-300/50 dark:hover:bg-gray-900/50">最大 Token: 2000</div> *@
                     <div id="headtemp" data-coreui-toggle="modal" data-coreui-target="#configModal" class="text-center p-1 rounded-md bg-gray-300/20 dark:bg-gray-900/10 hover:bg-gray-300/50 dark:hover:bg-gray-900/50">采样温度: 1</div>
                    @* <div id="headtopp" data-coreui-toggle="modal" data-coreui-target="#configModal" class="text-center p-1 rounded-md bg-gray-300/20 dark:bg-gray-900/10 hover:bg-gray-300/50 dark:hover:bg-gray-900/50">Top-p: 1</div>*@
@@ -155,8 +155,9 @@
                             
                                 <label for="Model" >Model:</label>
                                 <select class="" id="Model" style="width: 100%; max-width: 200px;position:unset;cursor:pointer">
-                                      <option value="gpt-3.5-turbo-16k">gpt-3.5-turbo-16k</option>
+                                       @* <option value="gpt-3.5-turbo-16k">gpt-3.5-turbo-16k</option>*@
                                         <option value="gpt-3.5-turbo">gpt-3.5-turbo</option>
+                                        <option value="gpt-4">gpt-4</option>
                                 </select>
                             
                            
@@ -262,7 +263,7 @@
     
    
     <script src="~/lib/jquery/dist/jquery-3.6.0.min.js"></script>
-    <script src="~/dist/js/bundle.75cc3a83ceae58a4dab9.js" ></script>
+    <script src="~/dist/js/bundle.3d630c2faf37a50d3703.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
