@@ -1,14 +1,5 @@
-using Amazon;
-using Amazon.Polly;
-using Amazon.Runtime;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using NLog.Web;
-using OpenAI.GPT3.Extensions;
 using OpenAIChatGpt.Services;
-using Serilog;
-using Serilog.Sinks.Async;
 
 namespace OpenAIChatGpt
 {
@@ -16,7 +7,7 @@ namespace OpenAIChatGpt
     {
         public static void Main(string[] args)
         {
-            var logger = NLogBuilder.ConfigureNLog("NLog.config").GetCurrentClassLogger();
+            var logger = NLogBuilder.ConfigureNLog("nlogsetting.config").GetCurrentClassLogger();
             var builder = WebApplication.CreateBuilder(args);
 
           

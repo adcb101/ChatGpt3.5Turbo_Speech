@@ -1,10 +1,7 @@
-﻿using Amazon.Polly.Model;
+﻿using Amazon;
 using Amazon.Polly;
-using System.IO;
+using Amazon.Polly.Model;
 using Amazon.Runtime;
-using Amazon;
-using System.Collections.Generic;
-using System;
 
 namespace OpenAIChatGpt.Services
 {

@@ -1,20 +1,12 @@
-﻿using Amazon;
-using Amazon.Polly;
-using Amazon.Polly.Model;
-using Amazon.Runtime;
-using Amazon.Runtime.Internal;
+﻿using Amazon.Polly;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using OpenAI.GPT3.Extensions;
 using OpenAIChatGpt.Models;
 using OpenAIChatGpt.Services;
-using System.Diagnostics;
-using System.Linq;
-using System.Net;
-using System.Net.Http.Headers;
 using System.Text.Json;
+
 
 
 namespace OpenAIChatGpt.Controllers
@@ -57,6 +49,8 @@ namespace OpenAIChatGpt.Controllers
             // 获取请求头
             var headers = Request.Headers;
             string? accessToken = "";
+            //var ipAddressString = HttpContext.Connection.RemoteIpAddress.ToString();
+            //_logger.LogInformation("ip:" + ipAddressString);
             // 检查是否包含Authorization头
             if (headers.TryGetValue("Authorization", out StringValues authHeaderValue))
                 accessToken = authHeaderValue.FirstOrDefault(); // 获取Bearer令牌的值
@@ -159,6 +153,9 @@ namespace OpenAIChatGpt.Controllers
             // 获取请求头
             var headers = Request.Headers;
             string accessToken = "";
+           
+            //var ipAddressString = HttpContext.Connection.RemoteIpAddress.ToString();
+            //_logger.LogInformation("ip:" + ipAddressString);
             // 检查是否包含Authorization头
             if (headers.TryGetValue("Authorization", out StringValues authHeaderValue))
             {

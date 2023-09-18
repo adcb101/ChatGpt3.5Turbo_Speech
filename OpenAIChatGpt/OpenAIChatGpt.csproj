@@ -13,12 +13,8 @@
 	</PropertyGroup>
 
 
-
-
-
 	<ItemGroup>
 		<Folder Include="wwwroot\chat\" />
-		<Folder Include="Factoryies\" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -27,58 +23,9 @@
 		<PackageReference Include="LaserCatEyes.HttpClientListener" Version="6.0.0" />
 		<PackageReference Include="NLog.Config" Version="4.7.15" />
 		<PackageReference Include="NLog.Web.AspNetCore" Version="5.2.3" />
-		<PackageReference Include="Serilog" Version="2.12.0" />
-		<PackageReference Include="Serilog.Extensions.Hosting" Version="5.0.1" />
-		<PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
-		<PackageReference Include="Serilog.Formatting.Compact" Version="1.1.0" />
-		<PackageReference Include="Serilog.Settings.Configuration" Version="3.4.0" />
-		<PackageReference Include="Serilog.Sinks.Async" Version="1.5.0" />
-		<PackageReference Include="Serilog.Sinks.Console" Version="4.1.0" />
-		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
 		<PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
 	</ItemGroup>
-	<ItemGroup>
-		<!-- Don't publish the MPA source files, but do show them in the project files list -->
-		<Content Remove="$(MpaRoot)**" />
-		<None Remove="$(MpaRoot)**" />
-		<None Include="$(MpaRoot)**" Exclude="$(MpaRoot)node_modules\**" />
-	</ItemGroup>
-
-	<Target Name="NpmInstall" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(MpaRoot)node_modules') ">
-		<!-- Ensure Node.js is installed -->
-		<Exec Command="node --version" ContinueOnError="true">
-			<Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
-		</Exec>
-		<Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build and run this project. To continue, please install Node.js from https://nodejs.org/, and then restart your command prompt or IDE." />
-		<Message Importance="high" Text="Restoring dependencies using 'npm'. This may take several minutes..." />
-		<Exec WorkingDirectory="$(MpaRoot)" Command="npm install" />
-	</Target>
-
-	<Target Name="NpmRunBuild" BeforeTargets="Build" DependsOnTargets="NpmInstall">
-		<Exec WorkingDirectory="$(MpaRoot)" Command="npm run build" />
-	</Target>
-
-	<Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
-		 <!--As part of publishing, ensure the JS resources are freshly built in production mode--> 
-		<Exec WorkingDirectory="$(MpaRoot)" Command="npm install" />
-		<Exec WorkingDirectory="$(MpaRoot)" Command="npm run build" />
-
-		 <!--Include the newly-built files in the publish output--> 
-		<ItemGroup>
-			<DistFiles Include="$(WWWRoot)dist\**" />
-			<ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
-				<RelativePath>%(DistFiles.Identity)</RelativePath>
-				<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-				<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-			</ResolvedFileToPublish>
-		</ItemGroup>
-	</Target>
-
-	<Target Name="NpmClean" BeforeTargets="Clean">
-		<RemoveDir Directories="$(WWWRoot)dist" />
-		<RemoveDir Directories="$(MpaRoot)node_modules" />
-	</Target>
-
+	
 	<ItemGroup>
 	  <Content Remove="Views\Shared\Template.cshtml" />
 	</ItemGroup>

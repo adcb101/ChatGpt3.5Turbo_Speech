@@ -8,7 +8,7 @@ namespace OpenAIChatGpt.Services
     {
         Task<HttpResponseMessage> GetCompletion(RequestData requestData, string apiKey);
         Task<HttpResponseMessage> GetCompletionStream(RequestData requestData, string apiKey);
-        IAsyncEnumerable<ChatCompletionCreateResponse> CreateCompletionAsStream(RequestData requestData, string apiKey, CancellationToken cancellationToken = default);
+       // IAsyncEnumerable<ChatCompletionCreateResponse> CreateCompletionAsStream(RequestData requestData, string apiKey, CancellationToken cancellationToken = default);
 
     }
 }

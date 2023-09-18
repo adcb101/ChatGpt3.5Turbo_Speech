@@ -1,12 +1,6 @@
-using OpenAI.GPT3.Interfaces;
-using OpenAI.GPT3.ObjectModels;
-using OpenAI.GPT3.ObjectModels.RequestModels;
-using OpenAIChatGpt.Services;
-using System.Data;
-
 namespace OpenAIChatGpt.Options
 {
-    
+
 
     public abstract class GeneralOption
     {

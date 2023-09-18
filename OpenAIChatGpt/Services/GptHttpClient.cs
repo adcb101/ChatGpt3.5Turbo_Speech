@@ -1,23 +1,11 @@
-﻿using Amazon.Runtime.Endpoints;
-using Amazon.Runtime.Internal.Transform;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
-using OpenAI.GPT3.Extensions;
-using OpenAI.GPT3.ObjectModels.RequestModels;
-using OpenAI.GPT3.ObjectModels.ResponseModels;
+﻿
 using OpenAIChatGpt.Models;
-using System.Net;
-using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-
-
 namespace OpenAIChatGpt.Services
 {
 
-    
+
 
     public class GptHttpClient: IGptHttpClient
     {
@@ -30,12 +18,13 @@ namespace OpenAIChatGpt.Services
            
            _httpClient = new HttpClient()
             {
-                BaseAddress= new Uri("https://api.openai.com/v1/"),
+                BaseAddress= new Uri("https://api.openai.withlogging.com/v1/"),
             };
-
+           
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _httpClient.DefaultRequestHeaders.Add("X-Api-Key", "Bearer 0dc078c6abc9987644a99ad0869148f7fc47e34e8412eab9fc7580912a5238e7");
             
-
+          
         }
 
         public async Task<HttpResponseMessage> GetCompletion(RequestData requestData,string apiKey)
@@ -43,8 +32,9 @@ namespace OpenAIChatGpt.Services
             
                 string[] apikeyArr = apiKey.Split(' ');
                 _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apikeyArr[1]);
-                //requestData.max_tokens = 300;
-                var responseMessage = await _httpClient.PostAsJsonAsync("chat/completions", requestData);
+               _httpClient.DefaultRequestHeaders.Add("X-User-Id", $@"15179793171@163.com_{apikeyArr[1]}");
+            //requestData.max_tokens = 300;
+            var responseMessage = await _httpClient.PostAsJsonAsync("chat/completions", requestData);
 
                 //_logger.LogInformation(response.choices[0]);
                 return responseMessage;
@@ -56,6 +46,7 @@ namespace OpenAIChatGpt.Services
             
             string[] apikeyArr = apiKey.Split(' ');
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", apikeyArr[1]);
+            _httpClient.DefaultRequestHeaders.Add("X-User-Id", $@"15179793171@163.com_{apikeyArr[1]}");
 
             // 构建一个新的请求，代理到C后端API
             var httpRequest = new HttpRequestMessage(HttpMethod.Post, "chat/completions");
@@ -70,7 +61,7 @@ namespace OpenAIChatGpt.Services
             
 
         }
-        public  async  IAsyncEnumerable<ChatCompletionCreateResponse> CreateCompletionAsStream(RequestData requestData, string apiKey,
+       /* public  async  IAsyncEnumerable<ChatCompletionCreateResponse> CreateCompletionAsStream(RequestData requestData, string apiKey,
        [EnumeratorCancellation] CancellationToken cancellationToken = default)
         {
             // Mark the request as streaming
@@ -125,7 +116,7 @@ namespace OpenAIChatGpt.Services
             }
         }
 
-
+*/
     }
 
 
