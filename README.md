@@ -53,8 +53,6 @@ ChatGpt3.5 Turbo Api 已经开放，可惜不像之前的接口无需科学上�
 #### 🎈 Tips
 
 只需要Openai的Api-key,语音识别和语音合成是不用key的，完全免费即可享受到最新的声音模型，目前只推荐在电脑端Edge浏览器使用，谷歌还未适配；
-<br />
-由于是http协议，如果你正式部署后，需要 输入edge://flags 找到Insecure origins treated as secure 改为enabled 后将部署后的节点加入排除不安全名单，才可调用麦克风;
 
 <br />
 
